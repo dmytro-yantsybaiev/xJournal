@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		0699D3102E53A77500CE1FCD /* Navigation in Frameworks */ = {isa = PBXBuildFile; productRef = 0699D30F2E53A77500CE1FCD /* Navigation */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		063163D42E53A26D00137031 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -33,7 +37,7 @@
 		063163E52E53A26D00137031 /* Exceptions for "xJournal" folder in "xJournal" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Resources/Info.plist,
 			);
 			target = 063163B82E53A26B00137031 /* xJournal */;
 		};
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0699D3102E53A77500CE1FCD /* Navigation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +96,7 @@
 				063163BB2E53A26B00137031 /* xJournal */,
 				063163D62E53A26D00137031 /* xJournalTests */,
 				063163E02E53A26D00137031 /* xJournalUITests */,
+				0699D30E2E53A77500CE1FCD /* Frameworks */,
 				063163BA2E53A26B00137031 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -103,6 +109,13 @@
 				063163DD2E53A26D00137031 /* xJournalUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		0699D30E2E53A77500CE1FCD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,6 +138,7 @@
 			);
 			name = xJournal;
 			packageProductDependencies = (
+				0699D30F2E53A77500CE1FCD /* Navigation */,
 			);
 			productName = xJournal;
 			productReference = 063163B92E53A26B00137031 /* xJournal.app */;
@@ -287,17 +301,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = xJournal/xJournal.entitlements;
+				CODE_SIGN_ENTITLEMENTS = xJournal/Resources/xJournal.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2ZK2BA5X87;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = xJournal/Info.plist;
+				INFOPLIST_FILE = xJournal/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -316,17 +330,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = xJournal/xJournal.entitlements;
+				CODE_SIGN_ENTITLEMENTS = xJournal/Resources/xJournal.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 2ZK2BA5X87;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = xJournal/Info.plist;
+				INFOPLIST_FILE = xJournal/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -573,6 +587,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0699D30F2E53A77500CE1FCD /* Navigation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Navigation;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 063163B12E53A26B00137031 /* Project object */;
 }
