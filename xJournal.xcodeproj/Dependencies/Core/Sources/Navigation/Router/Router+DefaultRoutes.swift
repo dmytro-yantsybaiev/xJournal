@@ -8,8 +8,6 @@
 import UIKit
 
 public typealias DefaultRoutes = (
-    Router.FinishFlowRoute &
-    Router.ResetFlowRoute &
     Router.SetRootRoute &
     Router.PushRoute &
     Router.PresentRoute &
@@ -20,6 +18,11 @@ public typealias DefaultRoutes = (
 
 extension Router {
 
+    public protocol StartFlowRoute: Route {
+        func start()
+        func start(completion: (() -> Void)?)
+    }
+
     public protocol FinishFlowRoute: Route {
         func finishFlow()
         func finishFlow(completion: (() -> Void)?)
@@ -27,7 +30,11 @@ extension Router {
 
     public protocol ResetFlowRoute: Route {
         func resetFlow()
+        func resetFlow(completion: (() -> Void)?)
     }
+}
+
+extension Router {
 
     public protocol SetRootRoute: Route {
         func set(root viewController: UIViewController, animated: Bool)

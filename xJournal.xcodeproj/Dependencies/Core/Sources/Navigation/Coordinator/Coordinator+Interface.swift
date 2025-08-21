@@ -12,6 +12,4 @@ public protocol Coordinator: AnyObject, DefaultRoutes {
     var navigationController: UINavigationController { get }
     var parentCoordinator: (any Coordinator)? { get }
     var childCoordinators: [any Coordinator] { get set }
-
-    func start()
 }

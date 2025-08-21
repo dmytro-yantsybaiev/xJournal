@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Y6W-OH-hqX">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Journal Entries View Controller-->
+        <scene sceneID="s0d-6b-0kx">
+            <objects>
+                <viewController id="Y6W-OH-hqX" customClass="JournalEntriesViewController" customModule="xJournal" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="NeE-jE-ZWr">
+                                <rect key="frame" x="0.0" y="118" width="393" height="734"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </tableView>
+                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="73S-SS-m6T">
+                                <rect key="frame" x="0.0" y="712" width="393" height="140"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="THd-A9-m2D">
+                                    <rect key="frame" x="0.0" y="0.0" width="393" height="140"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                </view>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="140" id="DpW-BZ-5JH"/>
+                                </constraints>
+                                <blurEffect style="light"/>
+                            </visualEffectView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Ye-fG-UK7">
+                                <rect key="frame" x="156.66666666666666" y="742" width="80" height="80"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="8Ye-fG-UK7" secondAttribute="height" multiplier="1:1" id="GVB-SV-5kw"/>
+                                    <constraint firstAttribute="width" constant="80" id="NCn-OU-lAv"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="plus" catalog="system">
+                                    <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage"/>
+                                    <color key="baseForegroundColor" name="Coral Blush"/>
+                                </buttonConfiguration>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
+                        <color key="backgroundColor" name="Cloud Petal"/>
+                        <constraints>
+                            <constraint firstItem="73S-SS-m6T" firstAttribute="leading" secondItem="5EZ-qb-Rvc" secondAttribute="leading" id="9t5-kk-NgM"/>
+                            <constraint firstAttribute="bottom" secondItem="NeE-jE-ZWr" secondAttribute="bottom" id="ABg-vr-u4z"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="NeE-jE-ZWr" secondAttribute="trailing" id="Bpt-gY-o04"/>
+                            <constraint firstItem="8Ye-fG-UK7" firstAttribute="centerY" secondItem="73S-SS-m6T" secondAttribute="centerY" id="DrY-xf-fXT"/>
+                            <constraint firstItem="NeE-jE-ZWr" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="E7v-ie-4YS"/>
+                            <constraint firstItem="8Ye-fG-UK7" firstAttribute="centerX" secondItem="73S-SS-m6T" secondAttribute="centerX" id="FyB-PT-oIr"/>
+                            <constraint firstAttribute="bottom" secondItem="73S-SS-m6T" secondAttribute="bottom" id="IfN-cu-60o"/>
+                            <constraint firstAttribute="trailing" secondItem="73S-SS-m6T" secondAttribute="trailing" id="dd4-88-rL8"/>
+                            <constraint firstItem="NeE-jE-ZWr" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="pz8-kx-Wgj"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="controller" destination="kMe-v4-UJo" id="g7h-wI-gQs"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <customObject id="kMe-v4-UJo" customClass="JournalEntriesController" customModule="xJournal" customModuleProvider="target">
+                    <connections>
+                        <outlet property="addEntryButton" destination="8Ye-fG-UK7" id="e4Z-1S-eT6"/>
+                        <outlet property="dataSource" destination="aC0-gK-A4k" id="jah-f9-Q0H"/>
+                        <outlet property="footerView" destination="73S-SS-m6T" id="lmN-HE-qPs"/>
+                        <outlet property="tableView" destination="NeE-jE-ZWr" id="64z-6a-SO1"/>
+                    </connections>
+                </customObject>
+                <customObject id="aC0-gK-A4k" customClass="JournalEntriesDataSource" customModule="xJournal" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="-83.206106870229007" y="24.647887323943664"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="plus" catalog="system" width="128" height="113"/>
+        <namedColor name="Cloud Petal">
+            <color red="0.97254901960784312" green="0.92941176470588238" blue="0.92156862745098034" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="Coral Blush">
+            <color red="1" green="0.70980392156862748" blue="0.65490196078431373" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

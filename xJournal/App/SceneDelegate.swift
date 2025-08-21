@@ -11,7 +11,7 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-    private(set) var appCoordinator: AppCoordinator!
+    private(set) var coordinator: Router.StartFlowRoute?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else {
@@ -21,8 +21,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
 
-        appCoordinator = AppCoordinator(window)
-        appCoordinator.start()
+        coordinator = AppCoordinator(window)
+        coordinator?.start()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

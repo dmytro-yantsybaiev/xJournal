@@ -17,20 +17,4 @@ class BaseCoordinator: Coordinator {
         self.parentCoordinator = coordinator
         self.navigationController = navigationController
     }
-
-    func start() {
-        // default implementation
-    }
-
-    func finishFlow() {
-        // default implementation
-    }
-
-    func finishFlow(completion: (() -> Void)?) {
-        // default implementation
-    }
-
-    func resetFlow() {
-        // default implementation
-    }
 }

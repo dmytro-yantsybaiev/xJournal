@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AppCoordinator: BaseCoordinator {
+final class AppCoordinator: BaseCoordinator, Router.StartFlowRoute {
 
     private let window: UIWindow?
 
@@ -19,8 +19,14 @@ final class AppCoordinator: BaseCoordinator {
         super.init(navigationController)
     }
 
-    override func start() {
-        super.start()
-        set(root: ViewController.storyboard, animated: true)
+    func start(completion: (() -> Void)?) {
+        if let coordinator = find(first: JournalEntriesCoordinator.self) {
+            remove(child: coordinator)
+            return
+        }
+        let coordinator = JournalEntriesCoordinator(navigationController, parent: self)
+        append(child: coordinator)
+        coordinator.start()
+        completion?()
     }
 }

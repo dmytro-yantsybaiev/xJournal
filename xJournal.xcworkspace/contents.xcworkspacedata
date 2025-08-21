@@ -4,8 +4,11 @@
    <FileRef
       location = "container:xJournal.xcodeproj">
    </FileRef>
-   <FileSystemSynchronizedGroup
-      location = "group:Dependencies"
+   <Group
+      location = "group:xJournal.xcodeproj/Dependencies"
       name = "Dependencies">
-   </FileSystemSynchronizedGroup>
+      <FileRef
+         location = "group:Core">
+      </FileRef>
+   </Group>
 </Workspace>
