@@ -12,15 +12,20 @@ final class JournalEntryCell: UITableViewCell {
     @IBOutlet private(set) weak var contentStackView: UIStackView!
     @IBOutlet private(set) weak var titleLabel: UILabel!
     @IBOutlet private(set) weak var textTextView: UITextView!
+    @IBOutlet private(set) weak var separatorView: UIView!
+
+    @IBOutlet private(set) weak var spacingHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private(set) weak var separatorViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet private(set) var textTextViewHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: UITableViewCellDelegate?
 
-    private var isExpanded = false
+    var isExpanded = false
 
     override func awakeFromNib() {
         super.awakeFromNib()
         MainActor.assumeIsolated { configure() }
+
     }
 
     override func layoutSubviews() {
@@ -33,16 +38,7 @@ final class JournalEntryCell: UITableViewCell {
         delegate = nil
         isExpanded = false
         textTextViewHeightConstraint.isActive = true
-    }
-}
-
-extension JournalEntryCell: UITextViewDelegate {
-
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        isExpanded.toggle()
-        textTextViewHeightConstraint.isActive = !isExpanded
-        delegate?.contentDidChange(cell: self)
-        return false
+        spacingHeightConstraint.constant = 0
     }
 }
 
@@ -62,8 +58,15 @@ private extension JournalEntryCell {
     }
 
     func configureTextTextView() {
-        textTextView.delegate = self
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapTextView))
+        textTextView.addGestureRecognizer(tapGesture)
         textTextView.textContainerInset = .zero
         textTextView.textContainer.lineFragmentPadding = .zero
+    }
+
+    @objc func onTapTextView() {
+        isExpanded.toggle()
+        textTextViewHeightConstraint.isActive = !isExpanded
+        delegate?.contentDidChange(cell: self)
     }
 }

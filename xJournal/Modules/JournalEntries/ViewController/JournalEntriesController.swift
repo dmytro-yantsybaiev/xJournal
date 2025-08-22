@@ -8,12 +8,20 @@
 import UIKit
 
 @MainActor
+protocol JournalEntriesControllerDelegate: AnyObject {
+
+    func didTapAddEntry()
+}
+
+@MainActor
 final class JournalEntriesController: NSObject {
     
     @IBOutlet private(set) weak var tableView: UITableView!
     @IBOutlet private(set) weak var addEntryButton: UIButton!
     @IBOutlet private(set) weak var footerView: UIVisualEffectView!
     @IBOutlet private(set) weak var dataSource: JournalEntriesDataSource!
+
+    weak var delegate: JournalEntriesControllerDelegate?
 
     func configure() {
         configureAddEntryButton()
@@ -34,6 +42,7 @@ private extension JournalEntriesController {
         addEntryButton.layer.shadowRadius = 8
         addEntryButton.layer.shadowOpacity = 0.4
         addEntryButton.layer.shadowPath = UIBezierPath(ovalIn: addEntryButton.bounds).cgPath
+        addEntryButton.addAction(UIAction { [unowned self] _ in delegate?.didTapAddEntry() }, for: .touchUpInside)
     }
 
     func configureFooterView() {

@@ -13,14 +13,17 @@ final class JournalEntriesDataSource: NSObject {
     private var tableView: UITableView?
     private var entries = [JournalEntry]()
 
+    private var cellIndexPath: IndexPath?
+
     func configure(_ tableView: UITableView, footerHeight: CGFloat) {
         self.tableView = tableView
+        tableView.register(JournalEntriesHeaderView.self)
         tableView.register(JournalEntryCell.self)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorColor = .clear
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: footerHeight - 20, right: 0)
-        tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: footerHeight - 20, right: 0)
+        tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: footerHeight - 20, right: -10)
     }
 
     func render(entries: [JournalEntry]) {
@@ -30,6 +33,10 @@ final class JournalEntriesDataSource: NSObject {
 }
 
 extension JournalEntriesDataSource: UITableViewDataSource {
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        1
+    }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         entries.count
@@ -50,6 +57,17 @@ extension JournalEntriesDataSource: UITableViewDataSource {
 }
 
 extension JournalEntriesDataSource: UITableViewDelegate {
+
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        (cell as? JournalEntryCell)?.separatorViewHeightConstraint.constant = 0.33
+    }
+
+//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//        guard let headerView: JournalEntriesHeaderView = tableView.dequeueReusableHeaderFooterView() else {
+//            return nil
+//        }
+//        return headerView
+//    }
 
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let bookmarkAction = UIContextualAction(style: .normal, title: nil, handler: { _, _, completion in
@@ -110,7 +128,7 @@ extension JournalEntriesDataSource: UITableViewDelegate {
     }
 
     private func preview(for cell: JournalEntryCell) -> UITargetedPreview? {
-        guard let snapshot = cell.contentStackView.snapshotView(afterScreenUpdates: false) else {
+        guard let snapshot = cell.contentStackView.snapshotView(afterScreenUpdates: true) else {
             return nil
         }
 
@@ -130,8 +148,37 @@ extension JournalEntriesDataSource: UITableViewDelegate {
 extension JournalEntriesDataSource: UITableViewCellDelegate {
 
     func contentDidChange(cell: UITableViewCell) {
-        UIView.animate(springDuration: 0.2) {
-            tableView?.performBatchUpdates { cell.contentView.layoutIfNeeded() }
+        guard let tableView, let cell = cell as? JournalEntryCell, let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+
+        tableView.isUserInteractionEnabled = false
+
+        let expandedHeight: CGFloat = if cell.textTextView.bounds.height > cell.textTextViewHeightConstraint.constant {
+            cell.textTextView.bounds.height - cell.textTextViewHeightConstraint.constant
+        } else {
+            .zero
+        }
+
+        cell.spacingHeightConstraint.constant = expandedHeight
+
+        UIView.animate(withDuration: 0.3) {
+            tableView.performBatchUpdates {
+                cell.contentStackView.layoutIfNeeded()
+            }
+        } completion: { _ in
+            if expandedHeight > 0 {
+                UIView.setAnimationsEnabled(false)
+                tableView.performBatchUpdates {
+                    cell.spacingHeightConstraint.constant = 0
+                    let currentOffset = tableView.contentOffset
+                    let newOffset = CGPoint(x: currentOffset.x, y: currentOffset.y - expandedHeight)
+                    tableView.setContentOffset(newOffset, animated: false)
+
+                }
+                UIView.setAnimationsEnabled(true)
+            }
+            tableView.isUserInteractionEnabled = true
         }
     }
 }

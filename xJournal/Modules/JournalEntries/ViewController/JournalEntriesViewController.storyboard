@@ -16,9 +16,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="NeE-jE-ZWr" customClass="ContentSizedTableView" customModule="xJournal" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="118" width="393" height="734"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <tableView contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" estimatedSectionHeaderHeight="-1" sectionFooterHeight="18" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="NeE-jE-ZWr" customClass="ContentSizedTableView" customModule="xJournal" customModuleProvider="target">
+                                <rect key="frame" x="10" y="118" width="373" height="734"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <inset key="scrollIndicatorInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
                             </tableView>
                             <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="73S-SS-m6T">
                                 <rect key="frame" x="0.0" y="732" width="393" height="120"/>
@@ -50,13 +51,13 @@
                         <constraints>
                             <constraint firstItem="73S-SS-m6T" firstAttribute="leading" secondItem="5EZ-qb-Rvc" secondAttribute="leading" id="9t5-kk-NgM"/>
                             <constraint firstAttribute="bottom" secondItem="NeE-jE-ZWr" secondAttribute="bottom" id="ABg-vr-u4z"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="NeE-jE-ZWr" secondAttribute="trailing" id="Bpt-gY-o04"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="NeE-jE-ZWr" secondAttribute="trailing" constant="10" id="Bpt-gY-o04"/>
                             <constraint firstItem="8Ye-fG-UK7" firstAttribute="centerY" secondItem="73S-SS-m6T" secondAttribute="centerY" constant="-5" id="DrY-xf-fXT"/>
                             <constraint firstItem="NeE-jE-ZWr" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="E7v-ie-4YS"/>
                             <constraint firstItem="8Ye-fG-UK7" firstAttribute="centerX" secondItem="73S-SS-m6T" secondAttribute="centerX" id="FyB-PT-oIr"/>
                             <constraint firstAttribute="bottom" secondItem="73S-SS-m6T" secondAttribute="bottom" id="IfN-cu-60o"/>
                             <constraint firstAttribute="trailing" secondItem="73S-SS-m6T" secondAttribute="trailing" id="OOB-iK-IT6"/>
-                            <constraint firstItem="NeE-jE-ZWr" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="pz8-kx-Wgj"/>
+                            <constraint firstItem="NeE-jE-ZWr" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="10" id="pz8-kx-Wgj"/>
                         </constraints>
                     </view>
                     <connections>
@@ -79,8 +80,11 @@
     </scenes>
     <resources>
         <image name="plus" catalog="system" width="128" height="113"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemIndigoColor">
-            <color red="0.34509803919999998" green="0.33725490200000002" blue="0.83921568629999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tableBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
