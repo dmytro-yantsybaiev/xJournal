@@ -10,6 +10,7 @@ import Combine
 
 class BaseViewController: UIViewController, Storyboardable {
 
+    lazy var viewDidLoadPassthroughSubject = PassthroughSubject<Void, Never>()
     lazy var cancellables = Set<AnyCancellable>()
 
     override func viewDidLoad() {
@@ -24,5 +25,9 @@ class BaseViewController: UIViewController, Storyboardable {
 
     func bind() {
         // default implementation
+    }
+
+    func sendViewDidLoad() {
+        viewDidLoadPassthroughSubject.send()
     }
 }

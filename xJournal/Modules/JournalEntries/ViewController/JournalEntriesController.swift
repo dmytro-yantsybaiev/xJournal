@@ -7,17 +7,18 @@
 
 import UIKit
 
+@MainActor
 final class JournalEntriesController: NSObject {
     
-    @IBOutlet private weak var tableView: UITableView!
-    @IBOutlet private weak var addEntryButton: UIButton!
-    @IBOutlet private weak var footerView: UIVisualEffectView!
-    @IBOutlet private weak var dataSource: JournalEntriesDataSource!
+    @IBOutlet private(set) weak var tableView: UITableView!
+    @IBOutlet private(set) weak var addEntryButton: UIButton!
+    @IBOutlet private(set) weak var footerView: UIVisualEffectView!
+    @IBOutlet private(set) weak var dataSource: JournalEntriesDataSource!
 
     func configure() {
-        dataSource.configure(tableView, footerHeight: footerView.bounds.height)
         configureAddEntryButton()
         configureFooterView()
+        configureDataSource()
     }
 }
 
@@ -29,9 +30,10 @@ private extension JournalEntriesController {
         addEntryButton.setImage(image, for: .normal)
         addEntryButton.layer.cornerRadius = addEntryButton.bounds.width / 2
         addEntryButton.layer.shadowOffset = CGSize(width: 0, height: 5)
-        addEntryButton.layer.shadowColor = UIColor.lightGray.cgColor
+        addEntryButton.layer.shadowColor = UIColor.black.cgColor
         addEntryButton.layer.shadowRadius = 8
-        addEntryButton.layer.shadowOpacity = 0.75
+        addEntryButton.layer.shadowOpacity = 0.4
+        addEntryButton.layer.shadowPath = UIBezierPath(ovalIn: addEntryButton.bounds).cgPath
     }
 
     func configureFooterView() {
@@ -43,5 +45,10 @@ private extension JournalEntriesController {
         ]
         gradientLayer.locations = [0.0, 1.0]
         footerView.layer.mask = gradientLayer
+        footerView.isUserInteractionEnabled = false
+    }
+
+    func configureDataSource() {
+        dataSource.configure(tableView, footerHeight: footerView.bounds.height)
     }
 }

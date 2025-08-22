@@ -7,30 +7,11 @@
 
 import UIKit
 
+@MainActor
 final class JournalEntriesDataSource: NSObject {
 
-
-//    enum 
-
     private var tableView: UITableView?
-
-    private var items = [
-        "Cell 1",
-        "Cell 2",
-        "Cell 3",
-        "Cell 4",
-        "Cell 5",
-        "Cell 1",
-        "Cell 2",
-        "Cell 3",
-        "Cell 4",
-        "Cell 5",
-        "Cell 1",
-        "Cell 2",
-        "Cell 3",
-        "Cell 4",
-        "Cell 5",
-    ]
+    private var entries = [JournalEntry]()
 
     func configure(_ tableView: UITableView, footerHeight: CGFloat) {
         self.tableView = tableView
@@ -41,22 +22,29 @@ final class JournalEntriesDataSource: NSObject {
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: footerHeight - 20, right: 0)
         tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: footerHeight - 20, right: 0)
     }
+
+    func render(entries: [JournalEntry]) {
+        self.entries = entries
+        tableView?.reloadData()
+    }
 }
 
 extension JournalEntriesDataSource: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        items.count
+        entries.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell: JournalEntryCell = tableView.dequeueReusableCell(at: indexPath),
-              let item = items[safe: indexPath.row] else {
+              let entry = entries[safe: indexPath.row] else {
             return UITableViewCell()
         }
         cell.selectionStyle = .none
         cell.backgroundColor = .clear
-        cell.titleLabel.text = item
+        cell.delegate = self
+        cell.titleLabel.text = entry.title
+        cell.textTextView.text = entry.text
         return cell
     }
 }
@@ -68,7 +56,7 @@ extension JournalEntriesDataSource: UITableViewDelegate {
             print("Bookmark")
             completion(true)
         })
-        bookmarkAction.backgroundColor = .white.withAlphaComponent(0)
+//        bookmarkAction.backgroundColor = .white.withAlphaComponent(0)
         bookmarkAction.image = UIImage(systemName: "bookmark")
 
         return UISwipeActionsConfiguration(actions: [bookmarkAction])
@@ -79,7 +67,7 @@ extension JournalEntriesDataSource: UITableViewDelegate {
             print("Edit")
             completion(true)
         })
-        editAction.backgroundColor = .white.withAlphaComponent(0)
+//        editAction.backgroundColor = .white.withAlphaComponent(0)
         editAction.image = UIImage(systemName: "pencil")
 
 
@@ -87,7 +75,7 @@ extension JournalEntriesDataSource: UITableViewDelegate {
             print("Delete")
             completion(true)
         })
-        deleteAction.backgroundColor = .white.withAlphaComponent(0)
+//        deleteAction.backgroundColor = .white.withAlphaComponent(0)
         deleteAction.image = UIImage(systemName: "trash")
 
         return UISwipeActionsConfiguration(actions: [deleteAction, editAction])
@@ -136,5 +124,14 @@ extension JournalEntriesDataSource: UITableViewDelegate {
         )
 
         return UITargetedPreview(view: snapshot, parameters: parameters, target: previewTarget)
+    }
+}
+
+extension JournalEntriesDataSource: UITableViewCellDelegate {
+
+    func contentDidChange(cell: UITableViewCell) {
+        UIView.animate(springDuration: 0.2) {
+            tableView?.performBatchUpdates { cell.contentView.layoutIfNeeded() }
+        }
     }
 }
