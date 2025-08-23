@@ -7,25 +7,28 @@
 
 import UIKit
 
+@MainActor
+protocol JournalEntryCellDelegate: AnyObject {
+
+    func didTapTextView(cell: JournalEntryCell)
+}
+
 final class JournalEntryCell: UITableViewCell {
 
     @IBOutlet private(set) weak var contentStackView: UIStackView!
     @IBOutlet private(set) weak var titleLabel: UILabel!
-    @IBOutlet private(set) weak var textTextView: UITextView!
-    @IBOutlet private(set) weak var separatorView: UIView!
+    @IBOutlet private(set) weak var textView: UITextView!
 
-    @IBOutlet private(set) weak var spacingHeightConstraint: NSLayoutConstraint!
-    @IBOutlet private(set) weak var separatorViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet private(set) var textTextViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private(set) weak var textViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet private(set) weak var bottomSeparatorHeightConstraint: NSLayoutConstraint!
 
-    weak var delegate: UITableViewCellDelegate?
+    weak var delegate: JournalEntryCellDelegate?
 
-    var isExpanded = false
+    let textViewMinimumHeight: CGFloat = 300
 
     override func awakeFromNib() {
         super.awakeFromNib()
         MainActor.assumeIsolated { configure() }
-
     }
 
     override func layoutSubviews() {
@@ -36,9 +39,7 @@ final class JournalEntryCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         delegate = nil
-        isExpanded = false
-        textTextViewHeightConstraint.isActive = true
-        spacingHeightConstraint.constant = 0
+        textViewHeightConstraint.constant = textViewMinimumHeight
     }
 }
 
@@ -59,14 +60,12 @@ private extension JournalEntryCell {
 
     func configureTextTextView() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onTapTextView))
-        textTextView.addGestureRecognizer(tapGesture)
-        textTextView.textContainerInset = .zero
-        textTextView.textContainer.lineFragmentPadding = .zero
+        textView.addGestureRecognizer(tapGesture)
+        textView.textContainerInset = .zero
+        textView.textContainer.lineFragmentPadding = .zero
     }
 
     @objc func onTapTextView() {
-        isExpanded.toggle()
-        textTextViewHeightConstraint.isActive = !isExpanded
-        delegate?.contentDidChange(cell: self)
+        delegate?.didTapTextView(cell: self)
     }
 }

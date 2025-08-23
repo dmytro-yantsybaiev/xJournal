@@ -18,6 +18,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
+        UserDefaults.standard.setValue(false, forKey:"_UIConstraintBasedLayoutLogUnsatisfiable")
+
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
 

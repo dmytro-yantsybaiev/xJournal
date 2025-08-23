@@ -51,7 +51,7 @@ extension JournalEntriesDataSource: UITableViewDataSource {
         cell.backgroundColor = .clear
         cell.delegate = self
         cell.titleLabel.text = entry.title
-        cell.textTextView.text = entry.text
+        cell.textView.text = entry.text
         return cell
     }
 }
@@ -59,7 +59,7 @@ extension JournalEntriesDataSource: UITableViewDataSource {
 extension JournalEntriesDataSource: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        (cell as? JournalEntryCell)?.separatorViewHeightConstraint.constant = 0.33
+        (cell as? JournalEntryCell)?.bottomSeparatorHeightConstraint.constant = 0.33
     }
 
 //    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -145,40 +145,51 @@ extension JournalEntriesDataSource: UITableViewDelegate {
     }
 }
 
-extension JournalEntriesDataSource: UITableViewCellDelegate {
+extension JournalEntriesDataSource: JournalEntryCellDelegate {
 
-    func contentDidChange(cell: UITableViewCell) {
-        guard let tableView, let cell = cell as? JournalEntryCell, let indexPath = tableView.indexPath(for: cell) else {
+    func didTapTextView(cell: JournalEntryCell) {
+        guard let tableView else {
             return
         }
 
         tableView.isUserInteractionEnabled = false
 
-        let expandedHeight: CGFloat = if cell.textTextView.bounds.height > cell.textTextViewHeightConstraint.constant {
-            cell.textTextView.bounds.height - cell.textTextViewHeightConstraint.constant
-        } else {
-            .zero
-        }
+        let currentOffset = tableView.contentOffset
+        let isCellTopPointVisibleInWindow = isTopPointVisibleInWindow(for: cell)
+        let isCellExpanded = cell.textViewHeightConstraint.constant > cell.textViewMinimumHeight
+        let textViewSize = CGSize(width: cell.textView.bounds.width, height: .greatestFiniteMagnitude)
+        let textViewEstimatedHeight = cell.textView.sizeThatFits(textViewSize).height
+        let expandedHeightDelta = textViewEstimatedHeight - cell.textViewMinimumHeight
+        let contentOffsetDelta = isCellExpanded ? expandedHeightDelta : -expandedHeightDelta
 
-        cell.spacingHeightConstraint.constant = expandedHeight
+        cell.textViewHeightConstraint.constant = isCellExpanded ? cell.textViewMinimumHeight : textViewEstimatedHeight
 
         UIView.animate(withDuration: 0.3) {
             tableView.performBatchUpdates {
-                cell.contentStackView.layoutIfNeeded()
+                cell.contentView.layoutIfNeeded()
+                if !isCellTopPointVisibleInWindow {
+                    tableView.setContentOffset(CGPoint(x: currentOffset.x, y: currentOffset.y - contentOffsetDelta), animated: false)
+                }
             }
         } completion: { _ in
-            if expandedHeight > 0 {
+            if !isCellTopPointVisibleInWindow {
                 UIView.setAnimationsEnabled(false)
                 tableView.performBatchUpdates {
-                    cell.spacingHeightConstraint.constant = 0
-                    let currentOffset = tableView.contentOffset
-                    let newOffset = CGPoint(x: currentOffset.x, y: currentOffset.y - expandedHeight)
-                    tableView.setContentOffset(newOffset, animated: false)
-
+                    tableView.setContentOffset(CGPoint(x: currentOffset.x, y: currentOffset.y - contentOffsetDelta), animated: false)
                 }
                 UIView.setAnimationsEnabled(true)
             }
+
             tableView.isUserInteractionEnabled = true
         }
+    }
+
+    func isTopPointVisibleInWindow(for cell: UITableViewCell) -> Bool {
+        guard let window = cell.window else {
+            return false
+        }
+        let cellFrameInWindow = cell.convert(cell.bounds, to: window)
+        let topPoint = CGPoint(x: cellFrameInWindow.minX, y: cellFrameInWindow.minY)
+        return window.bounds.contains(topPoint)
     }
 }
