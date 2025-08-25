@@ -32,17 +32,49 @@
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dtY-LY-g4V">
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2cU-Ns-Rxh" userLabel="Text View Container">
                                                 <rect key="frame" x="10" y="25.333333333333343" width="442" height="300"/>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <subviews>
+                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dtY-LY-g4V">
+                                                        <rect key="frame" x="0.0" y="0.0" width="442" height="300"/>
+                                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="300" id="dSI-kr-909"/>
+                                                        </constraints>
+                                                        <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                                        <color key="textColor" systemColor="labelColor"/>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                    </textView>
+                                                    <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fca-T6-ikT" userLabel="Chevron Image View Container">
+                                                        <rect key="frame" x="412" y="263" width="30" height="30"/>
+                                                        <subviews>
+                                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chevron.down" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="TJE-e6-l7E">
+                                                                <rect key="frame" x="11.333333333333316" y="5.3333333333333321" width="18.666666666666671" height="20"/>
+                                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                                <color key="tintColor" systemColor="systemGrayColor"/>
+                                                            </imageView>
+                                                        </subviews>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="30" id="1g6-HG-z92"/>
+                                                            <constraint firstAttribute="trailing" secondItem="TJE-e6-l7E" secondAttribute="trailing" id="IsK-NA-V0R"/>
+                                                            <constraint firstAttribute="width" secondItem="fca-T6-ikT" secondAttribute="height" multiplier="1:1" id="LdR-Yn-XK5"/>
+                                                            <constraint firstItem="TJE-e6-l7E" firstAttribute="top" secondItem="fca-T6-ikT" secondAttribute="top" id="V8B-wn-D7h"/>
+                                                            <constraint firstAttribute="bottom" secondItem="TJE-e6-l7E" secondAttribute="bottom" id="jGq-ft-oMm"/>
+                                                        </constraints>
+                                                    </view>
+                                                </subviews>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="300" id="dSI-kr-909"/>
+                                                    <constraint firstAttribute="trailing" secondItem="dtY-LY-g4V" secondAttribute="trailing" id="3rq-3o-lfy"/>
+                                                    <constraint firstItem="dtY-LY-g4V" firstAttribute="top" secondItem="2cU-Ns-Rxh" secondAttribute="top" id="FfH-ag-ZgY"/>
+                                                    <constraint firstItem="dtY-LY-g4V" firstAttribute="leading" secondItem="2cU-Ns-Rxh" secondAttribute="leading" id="RFy-tQ-k4n"/>
+                                                    <constraint firstAttribute="bottom" secondItem="dtY-LY-g4V" secondAttribute="bottom" id="aHx-md-xvX"/>
+                                                    <constraint firstAttribute="bottom" secondItem="fca-T6-ikT" secondAttribute="bottom" constant="7" id="ija-mN-baL"/>
+                                                    <constraint firstAttribute="trailing" secondItem="fca-T6-ikT" secondAttribute="trailing" id="tZf-5r-9ie"/>
                                                 </constraints>
-                                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
-                                                <color key="textColor" systemColor="labelColor"/>
-                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                            </textView>
+                                            </view>
                                         </subviews>
                                         <directionalEdgeInsets key="directionalLayoutMargins" top="0.0" leading="10" bottom="0.0" trailing="10"/>
                                     </stackView>
@@ -82,13 +114,14 @@
                                         <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="10" bottom="5" trailing="10"/>
                                     </stackView>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemPurpleColor"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
                             </stackView>
                         </subviews>
                         <directionalEdgeInsets key="directionalLayoutMargins" top="10" leading="10" bottom="10" trailing="10"/>
                     </stackView>
                 </subviews>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="lgn-wd-r2P" secondAttribute="trailing" id="JT8-C2-1Hq"/>
                     <constraint firstAttribute="bottom" secondItem="lgn-wd-r2P" secondAttribute="bottom" id="ccm-eJ-8o0"/>
@@ -99,6 +132,8 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="bottomSeparatorHeightConstraint" destination="rYa-O7-KRU" id="4I6-P4-T19"/>
+                <outlet property="chevronImageView" destination="TJE-e6-l7E" id="GxM-m6-ouR"/>
+                <outlet property="chevronImageViewContainer" destination="fca-T6-ikT" id="XmY-Er-SWU"/>
                 <outlet property="contentStackView" destination="HuP-7X-AnA" id="N8f-jV-RLc"/>
                 <outlet property="textView" destination="dtY-LY-g4V" id="0zB-Y4-dld"/>
                 <outlet property="textViewHeightConstraint" destination="dSI-kr-909" id="SgV-r4-Wc0"/>
@@ -108,6 +143,7 @@
         </tableViewCell>
     </objects>
     <resources>
+        <image name="chevron.down" catalog="system" width="128" height="70"/>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -115,11 +151,11 @@
         <systemColor name="opaqueSeparatorColor">
             <color red="0.77647058820000003" green="0.77647058820000003" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemGrayColor">
             <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemPurpleColor">
-            <color red="0.68627450980000004" green="0.32156862749999998" blue="0.87058823529999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
