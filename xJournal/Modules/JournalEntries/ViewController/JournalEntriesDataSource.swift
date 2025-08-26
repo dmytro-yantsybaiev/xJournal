@@ -68,39 +68,53 @@ extension JournalEntriesDataSource: UITableViewDelegate {
         cell.updateBottomSeparator(height: 0.33)
     }
 
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        guard let headerView: JournalEntriesHeaderView = tableView.dequeueReusableHeaderFooterView() else {
-//            return nil
-//        }
-//        return headerView
-//    }
+    //    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    //        guard let headerView: JournalEntriesHeaderView = tableView.dequeueReusableHeaderFooterView() else {
+    //            return nil
+    //        }
+    //        return headerView
+    //    }
 
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let cell = tableView.cellForRow(at: indexPath) else {
+            return nil
+        }
+
         let bookmarkAction = UIContextualAction(style: .normal, title: nil, handler: { _, _, completion in
             print("Bookmark")
             completion(true)
         })
-//        bookmarkAction.backgroundColor = .white.withAlphaComponent(0)
-        bookmarkAction.image = UIImage(systemName: "bookmark")
+        bookmarkAction.backgroundColor = .white.withAlphaComponent(0)
+        bookmarkAction.image =
+        UIImage(systemName: "bookmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 40))?
+            .withTintColor(.systemPink, renderingMode: .alwaysOriginal)
+            .withBaselineOffset(fromBottom: centerOffset(of: cell, in: tableView)?.dy ?? .zero)
 
         return UISwipeActionsConfiguration(actions: [bookmarkAction])
     }
 
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let cell = tableView.cellForRow(at: indexPath) else {
+            return nil
+        }
+
         let editAction = UIContextualAction(style: .normal, title: nil, handler: { _, _, completion in
             print("Edit")
             completion(true)
         })
-//        editAction.backgroundColor = .white.withAlphaComponent(0)
-        editAction.image = UIImage(systemName: "pencil")
-
+        editAction.backgroundColor = .white.withAlphaComponent(.zero)
+        editAction.image = UIImage(systemName: "pencil.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 40))?
+            .withTintColor(.systemIndigo, renderingMode: .alwaysOriginal)
+            .withBaselineOffset(fromBottom: centerOffset(of: cell, in: tableView)?.dy ?? .zero)
 
         let deleteAction = UIContextualAction(style: .destructive, title: nil, handler: { _, _, completion in
             print("Delete")
             completion(true)
         })
-//        deleteAction.backgroundColor = .white.withAlphaComponent(0)
-        deleteAction.image = UIImage(systemName: "trash")
+        deleteAction.backgroundColor = .white.withAlphaComponent(.zero)
+        deleteAction.image = UIImage(systemName: "trash.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 40))?
+            .withTintColor(.red, renderingMode: .alwaysOriginal)
+            .withBaselineOffset(fromBottom: centerOffset(of: cell, in: tableView)?.dy ?? .zero)
 
         return UISwipeActionsConfiguration(actions: [deleteAction, editAction])
     }
@@ -132,23 +146,6 @@ extension JournalEntriesDataSource: UITableViewDelegate {
         }
         return preview(for: cell)
     }
-
-    private func preview(for cell: JournalEntryCell) -> UITargetedPreview? {
-        guard let snapshot = cell.contentStackView.snapshotView(afterScreenUpdates: true) else {
-            return nil
-        }
-
-        let parameters = UIPreviewParameters()
-        parameters.visiblePath = UIBezierPath(roundedRect: cell.contentStackView.bounds, cornerRadius: cell.contentStackView.layer.cornerRadius)
-        parameters.backgroundColor = .clear
-
-        let previewTarget = UIPreviewTarget(
-            container: cell.contentStackView,
-            center: CGPoint(x: cell.contentStackView.bounds.midX, y: cell.contentStackView.bounds.midY)
-        )
-
-        return UITargetedPreview(view: snapshot, parameters: parameters, target: previewTarget)
-    }
 }
 
 extension JournalEntriesDataSource: JournalEntryCellDelegate {
@@ -174,6 +171,40 @@ extension JournalEntriesDataSource: JournalEntryCellDelegate {
         } completion: { _ in
             tableView.isUserInteractionEnabled = true
         }
+    }
+}
+
+private extension JournalEntriesDataSource {
+
+    func centerOffset(of cell: UITableViewCell, in tableView: UITableView) -> CGVector? {
+        let cellCenter = CGPoint(x: cell.frame.midX, y: cell.frame.midY)
+        let cellFrame = tableView.convert(cell.frame, to: tableView)
+        let visibleRect = CGRect(origin: tableView.contentOffset, size: tableView.bounds.size)
+
+        guard let intersection = cellFrame.intersection(visibleRect).isNull ? nil : cellFrame.intersection(visibleRect) else {
+            return nil
+        }
+
+        let visibleCenter = CGPoint(x: intersection.midX, y: intersection.midY)
+
+        return CGVector(dx: visibleCenter.x - cellCenter.x, dy: visibleCenter.y - cellCenter.y)
+    }
+
+    func preview(for cell: JournalEntryCell) -> UITargetedPreview? {
+        guard let snapshot = cell.contentStackView.snapshotView(afterScreenUpdates: true) else {
+            return nil
+        }
+
+        let parameters = UIPreviewParameters()
+        parameters.visiblePath = UIBezierPath(roundedRect: cell.contentStackView.bounds, cornerRadius: cell.contentStackView.layer.cornerRadius)
+        parameters.backgroundColor = .clear
+
+        let previewTarget = UIPreviewTarget(
+            container: cell.contentStackView,
+            center: CGPoint(x: cell.contentStackView.bounds.midX, y: cell.contentStackView.bounds.midY)
+        )
+
+        return UITargetedPreview(view: snapshot, parameters: parameters, target: previewTarget)
     }
 
     func isTopPointVisibleInWindow(for cell: UITableViewCell) -> Bool {

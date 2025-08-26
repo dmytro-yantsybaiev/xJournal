@@ -121,6 +121,7 @@ private extension JournalEntryCell {
         blurLayer.shadowOffset = .zero
         blurLayer.shadowColor = UIColor.white.cgColor
         chevronImageView.backgroundColor = contentStackView.backgroundColor
+        chevronImageView.image = UIImage(systemName: "chevron.down", withConfiguration: UIImage.SymbolConfiguration(pointSize: 12))
         chevronImageViewContainer.backgroundColor = contentStackView.backgroundColor
         chevronImageViewContainer.layer.mask = blurLayer
         chevronImageViewContainer.isHidden = true
