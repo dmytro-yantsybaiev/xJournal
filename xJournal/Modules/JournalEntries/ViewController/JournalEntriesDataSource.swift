@@ -12,8 +12,7 @@ final class JournalEntriesDataSource: NSObject {
 
     private var tableView: UITableView?
     private var entries = [JournalEntry]()
-
-    private var cellIndexPath: IndexPath?
+    private var isUserScrolling = false
 
     func configure(_ tableView: UITableView, footerHeight: CGFloat) {
         self.tableView = tableView
@@ -22,8 +21,9 @@ final class JournalEntriesDataSource: NSObject {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorColor = .clear
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: footerHeight - 20, right: 0)
-        tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: footerHeight - 20, right: -10)
+        tableView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: footerHeight - 40, right: 0)
+        tableView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: footerHeight - 40, right: -10)
+        tableView.sectionFooterHeight = .leastNonzeroMagnitude
     }
 
     func render(entries: [JournalEntry]) {
@@ -47,14 +47,11 @@ extension JournalEntriesDataSource: UITableViewDataSource {
               let entry = entries[safe: indexPath.row] else {
             fatalError()
         }
-
         cell.selectionStyle = .none
         cell.backgroundColor = .clear
         cell.delegate = self
         cell.render(title: entry.title)
         cell.render(text: entry.text)
-        cell.updateTextView(height: cell.textViewMinimumHeight)
-
         return cell
     }
 }
@@ -68,13 +65,6 @@ extension JournalEntriesDataSource: UITableViewDelegate {
         cell.updateBottomSeparator(height: 0.33)
     }
 
-    //    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-    //        guard let headerView: JournalEntriesHeaderView = tableView.dequeueReusableHeaderFooterView() else {
-    //            return nil
-    //        }
-    //        return headerView
-    //    }
-
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard let cell = tableView.cellForRow(at: indexPath) else {
             return nil
@@ -85,8 +75,7 @@ extension JournalEntriesDataSource: UITableViewDelegate {
             completion(true)
         })
         bookmarkAction.backgroundColor = .white.withAlphaComponent(0)
-        bookmarkAction.image =
-        UIImage(systemName: "bookmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 40))?
+        bookmarkAction.image = UIImage(systemName: "bookmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 40))?
             .withTintColor(.systemPink, renderingMode: .alwaysOriginal)
             .withBaselineOffset(fromBottom: centerOffset(of: cell, in: tableView)?.dy ?? .zero)
 
@@ -148,6 +137,55 @@ extension JournalEntriesDataSource: UITableViewDelegate {
     }
 }
 
+extension JournalEntriesDataSource {
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard !isUserScrolling else {
+            return
+        }
+        // reach top
+//        if scrollView.contentOffset.y <= .zero {
+//            let indexPath = IndexPath(row: 0, section: 0)
+//            categoriesCollectionView?.selectItem(at: indexPath, animated: false, scrollPosition: .left)
+//        }
+//        let tolerance: CGFloat = 50
+//
+//        if scrollView.contentOffset.y > .zero, scrollView.contentOffset.y < 100 {
+//            if abs(scrollView.contentOffset.y - 0) < tolerance {
+//                scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: 100), animated: true)
+//            } else if abs(scrollView.contentOffset.y - 100) < tolerance {
+//                scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: 0), animated: true)
+//            }
+//
+//        }
+
+        print("sss")
+    }
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        isUserScrolling = true
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            isUserScrolling = false
+//            UIView.animate(withDuration: 0.2) {
+//                scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: 100), animated: false)
+//            }
+
+        }
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        isUserScrolling = false
+//        UIView.animate(withDuration: 0.2) {
+//            scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: 100), animated: false)
+//        }
+
+    }
+
+}
+
 extension JournalEntriesDataSource: JournalEntryCellDelegate {
 
     func didTapTextView(cell: JournalEntryCell) {
@@ -166,9 +204,11 @@ extension JournalEntriesDataSource: JournalEntryCellDelegate {
                     tableView.scrollToRow(at: indexPath, at: .top, animated: false)
                 }
                 cell.toggleExpandedState()
+                cell.hideTextChevronImage()
                 cell.layoutIfNeeded()
             }
         } completion: { _ in
+            if !cell.isExpanded { cell.showTextChevronImageIfAble() }
             tableView.isUserInteractionEnabled = true
         }
     }
@@ -187,11 +227,11 @@ private extension JournalEntriesDataSource {
 
         let visibleCenter = CGPoint(x: intersection.midX, y: intersection.midY)
 
-        return CGVector(dx: visibleCenter.x - cellCenter.x, dy: visibleCenter.y - cellCenter.y)
+        return CGVector(dx: visibleCenter.x - cellCenter.x, dy: visibleCenter.y - cellCenter.y + 15)
     }
 
     func preview(for cell: JournalEntryCell) -> UITargetedPreview? {
-        guard let snapshot = cell.contentStackView.snapshotView(afterScreenUpdates: true) else {
+        guard let snapshot = cell.contentStackView.snapshotView(afterScreenUpdates: false) else {
             return nil
         }
 

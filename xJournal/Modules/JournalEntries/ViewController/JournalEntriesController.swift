@@ -10,6 +10,8 @@ import UIKit
 @MainActor
 protocol JournalEntriesControllerDelegate: AnyObject {
 
+    func didTapSearchButton()
+    func didTapMenuButton()
     func didTapAddEntry()
 }
 
@@ -20,6 +22,33 @@ final class JournalEntriesController: NSObject {
     @IBOutlet private(set) weak var addEntryButton: UIButton!
     @IBOutlet private(set) weak var footerView: UIVisualEffectView!
     @IBOutlet private(set) weak var dataSource: JournalEntriesDataSource!
+
+    private(set) lazy var navigationBarTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Journal"
+        label.font = .systemFont(ofSize: 17, weight: .semibold)
+        return label
+    }()
+
+    private(set) lazy var searchButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+        button.setImage(UIImage(systemName: "magnifyingglass"), for: .normal)
+        button.tintColor = .label
+        button.backgroundColor = .systemGray5
+        button.layer.cornerRadius = button.frame.width / 2
+        button.addAction(UIAction { [unowned self] _ in delegate?.didTapSearchButton() }, for: .touchUpInside)
+        return button
+    }()
+
+    private(set) lazy var menuButton: UIButton = {
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+        button.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        button.tintColor = .label
+        button.backgroundColor = .systemGray5
+        button.layer.cornerRadius = button.frame.width / 2
+        button.addAction(UIAction { [unowned self] _ in delegate?.didTapMenuButton() }, for: .touchUpInside)
+        return button
+    }()
 
     weak var delegate: JournalEntriesControllerDelegate?
 

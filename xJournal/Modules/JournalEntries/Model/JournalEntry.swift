@@ -6,9 +6,17 @@
 //
 
 import Foundation
+import SwiftData
 
-struct JournalEntry: Hashable {
-    let id = UUID().uuidString
-    let title: String?
-    let text: String?
+@Model
+class JournalEntry {
+
+    private(set) var id = UUID().uuidString
+    private(set) var title: String?
+    private(set) var text: String?
+
+    init(title: String?, text: String?) {
+        self.title = title
+        self.text = text
+    }
 }

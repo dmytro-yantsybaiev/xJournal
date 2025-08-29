@@ -48,10 +48,10 @@
                                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                     </textView>
                                                     <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fca-T6-ikT" userLabel="Chevron Image View Container">
-                                                        <rect key="frame" x="412" y="263" width="30" height="30"/>
+                                                        <rect key="frame" x="422" y="264" width="20" height="30"/>
                                                         <subviews>
                                                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="TJE-e6-l7E">
-                                                                <rect key="frame" x="15" y="6.3333333333333321" width="15" height="18.333333333333336"/>
+                                                                <rect key="frame" x="5" y="6.3333333333333321" width="15" height="18.333333333333336"/>
                                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                                 <color key="tintColor" systemColor="systemGrayColor"/>
                                                                 <imageReference key="image" image="chevron.down" catalog="system" symbolScale="small"/>
@@ -61,19 +61,19 @@
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="30" id="1g6-HG-z92"/>
                                                             <constraint firstAttribute="trailing" secondItem="TJE-e6-l7E" secondAttribute="trailing" id="IsK-NA-V0R"/>
-                                                            <constraint firstAttribute="width" secondItem="fca-T6-ikT" secondAttribute="height" multiplier="1:1" id="LdR-Yn-XK5"/>
                                                             <constraint firstItem="TJE-e6-l7E" firstAttribute="top" secondItem="fca-T6-ikT" secondAttribute="top" id="V8B-wn-D7h"/>
+                                                            <constraint firstAttribute="width" constant="20" id="em1-yW-92t"/>
                                                             <constraint firstAttribute="bottom" secondItem="TJE-e6-l7E" secondAttribute="bottom" id="jGq-ft-oMm"/>
                                                         </constraints>
                                                     </view>
                                                 </subviews>
-                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="dtY-LY-g4V" secondAttribute="trailing" id="3rq-3o-lfy"/>
                                                     <constraint firstItem="dtY-LY-g4V" firstAttribute="top" secondItem="2cU-Ns-Rxh" secondAttribute="top" id="FfH-ag-ZgY"/>
                                                     <constraint firstItem="dtY-LY-g4V" firstAttribute="leading" secondItem="2cU-Ns-Rxh" secondAttribute="leading" id="RFy-tQ-k4n"/>
                                                     <constraint firstAttribute="bottom" secondItem="dtY-LY-g4V" secondAttribute="bottom" id="aHx-md-xvX"/>
-                                                    <constraint firstAttribute="bottom" secondItem="fca-T6-ikT" secondAttribute="bottom" constant="7" id="ija-mN-baL"/>
+                                                    <constraint firstAttribute="bottom" secondItem="fca-T6-ikT" secondAttribute="bottom" constant="6" id="ija-mN-baL"/>
                                                     <constraint firstAttribute="trailing" secondItem="fca-T6-ikT" secondAttribute="trailing" id="tZf-5r-9ie"/>
                                                 </constraints>
                                             </view>
@@ -81,38 +81,41 @@
                                         <directionalEdgeInsets key="directionalLayoutMargins" top="0.0" leading="10" bottom="0.0" trailing="10"/>
                                     </stackView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ejL-uh-ngq" userLabel="Bottom Separator View">
-                                        <rect key="frame" x="5" y="402.33333333333331" width="462" height="1"/>
+                                        <rect key="frame" x="5" y="403.33333333333331" width="462" height="1"/>
                                         <color key="backgroundColor" systemColor="opaqueSeparatorColor"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="rYa-O7-KRU"/>
                                         </constraints>
                                     </view>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="b2A-NC-ur3" userLabel="Entry Info Stack View">
-                                        <rect key="frame" x="5" y="475" width="462" height="26"/>
+                                        <rect key="frame" x="5" y="477" width="462" height="24"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tuesday, Aug 12" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0cR-fE-S07">
-                                                <rect key="frame" x="10" y="5" width="98" height="16"/>
-                                                <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tuesday, Aug 12" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0cR-fE-S07">
+                                                <rect key="frame" x="10" y="5" width="91.666666666666671" height="14"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                 <color key="textColor" systemColor="systemGrayColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KrI-J3-Drr">
-                                                <rect key="frame" x="420" y="5" width="32" height="16"/>
+                                                <rect key="frame" x="436" y="5" width="16" height="14"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1cb-UB-2dn">
-                                                        <rect key="frame" x="0.0" y="0.0" width="32" height="16"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="16" height="14"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="32" id="fNG-dE-V4P"/>
-                                                            <constraint firstAttribute="height" constant="16" id="m5B-ja-6Jt"/>
+                                                            <constraint firstAttribute="width" constant="16" id="Tih-Zd-urw"/>
                                                         </constraints>
                                                         <state key="normal" title="Button"/>
-                                                        <buttonConfiguration key="configuration" style="plain" image="ellipsis" catalog="system">
+                                                        <buttonConfiguration key="configuration" style="plain">
+                                                            <imageReference key="image" image="ellipsis" catalog="system" symbolScale="medium"/>
                                                             <color key="baseForegroundColor" systemColor="systemGrayColor"/>
                                                         </buttonConfiguration>
                                                     </button>
                                                 </subviews>
                                             </stackView>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="24" id="jer-J4-Pxm"/>
+                                        </constraints>
                                         <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="10" bottom="5" trailing="10"/>
                                     </stackView>
                                 </subviews>
@@ -120,6 +123,7 @@
                                 <directionalEdgeInsets key="directionalLayoutMargins" top="5" leading="5" bottom="5" trailing="5"/>
                             </stackView>
                         </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <directionalEdgeInsets key="directionalLayoutMargins" top="10" leading="10" bottom="10" trailing="10"/>
                     </stackView>
                 </subviews>

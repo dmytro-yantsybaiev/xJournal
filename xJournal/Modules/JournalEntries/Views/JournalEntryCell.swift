@@ -71,6 +71,14 @@ final class JournalEntryCell: UITableViewCell {
         bottomSeparatorHeightConstraint.constant = height
     }
 
+    func showTextChevronImageIfAble() {
+        chevronImageViewContainer.isHidden = !isExpandable
+    }
+
+    func hideTextChevronImage() {
+        chevronImageViewContainer.isHidden = true
+    }
+
     func toggleExpandedState() {
         guard isExpandable else {
             return
@@ -78,10 +86,8 @@ final class JournalEntryCell: UITableViewCell {
 
         if isExpanded {
             updateTextView(height: textViewMinimumHeight)
-            chevronImageViewContainer.isHidden = !isExpandable
         } else {
             updateTextView(height: textViewEstimatedHeight)
-            chevronImageViewContainer.isHidden = true
         }
     }
 }
@@ -115,7 +121,7 @@ private extension JournalEntryCell {
     func configureChevronImageView() {
         let blurLayer = CAGradientLayer()
         blurLayer.frame = chevronImageViewContainer.bounds
-        blurLayer.shadowRadius = 4
+        blurLayer.shadowRadius = 5
         blurLayer.shadowPath = CGPath(roundedRect: chevronImageViewContainer.bounds.insetBy(dx: -2, dy: 0), cornerWidth: 0, cornerHeight: 0, transform: nil)
         blurLayer.shadowOpacity = 1
         blurLayer.shadowOffset = .zero

@@ -14,7 +14,8 @@ final class AppCoordinator: BaseCoordinator, Router.StartFlowRoute {
     init(_ window: UIWindow?) {
         self.window = window
         let navigationController = UINavigationController()
-        navigationController.navigationBar.prefersLargeTitles = true
+//        navigationController.setNavigationBarHidden(true, animated: false)
+        navigationController.hidesBarsOnSwipe = false
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
         super.init(navigationController)
