@@ -16,14 +16,13 @@ final class JournalEntriesViewController: BaseViewController {
 
     private let didTapSearchButtonPassthroughSubject = PassthroughSubject<Void, Never>()
     private let didTapMenuButtonPassthroughSubject = PassthroughSubject<Void, Never>()
+    private let didTapEditEntryPassthroughSubject = PassthroughSubject<JournalEntry, Never>()
     private let didTapAddEndtryButtonPassthroughSubject = PassthroughSubject<Void, Never>()
     private let didBookmarkEntryPassthroughSubject = PassthroughSubject<(UITableView, JournalEntry, IndexPath), Never>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         sendViewDidLoad()
-
-
     }
 
     override func viewDidLayoutSubviews() {
@@ -45,10 +44,11 @@ final class JournalEntriesViewController: BaseViewController {
             viewDidLoadPublisher: viewDidLoadPassthroughSubject.eraseToAnyPublisher(),
             didTapSearchButtonPublisher: didTapSearchButtonPassthroughSubject.eraseToAnyPublisher(),
             didTapMenuButtonPublisher: didTapMenuButtonPassthroughSubject.eraseToAnyPublisher(),
+            didTapEditEntryPublisher: didTapEditEntryPassthroughSubject.eraseToAnyPublisher(),
             didTapAddEndtryButtonPublisher: didTapAddEndtryButtonPassthroughSubject.eraseToAnyPublisher(),
             didBookmarkEntryPublisher: didBookmarkEntryPassthroughSubject.eraseToAnyPublisher(),
         )
-        let output = viewModel.transform(input)
+        let output = viewModel.bind(input)
 
         output
             .journalEntriesPublisher
@@ -70,6 +70,10 @@ extension JournalEntriesViewController: JournalEntriesControllerDelegate {
         didTapMenuButtonPassthroughSubject.send()
     }
 
+    func didTapEdit(_ journalEntry: JournalEntry) {
+        didTapEditEntryPassthroughSubject.send(journalEntry)
+    }
+
     func didTapAddEntry() {
         didTapAddEndtryButtonPassthroughSubject.send()
     }
@@ -88,11 +92,11 @@ private extension JournalEntriesViewController {
     }
 }
 
-#Preview {
-    let navigationController = UINavigationController()
-    let viewController = JournalEntriesViewController.storyboard
-    let viewModel = JournalEntriesViewModel()
-    navigationController.setViewControllers([viewController], animated: false)
-    viewController.viewModel = viewModel
-    return navigationController
-}
+//#Preview {
+//    let navigationController = UINavigationController()
+//    let viewController = JournalEntriesViewController.storyboard
+//    let viewModel = JournalEntriesViewModel()
+//    navigationController.setViewControllers([viewController], animated: false)
+//    viewController.viewModel = viewModel
+//    return navigationController
+//}

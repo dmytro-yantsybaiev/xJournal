@@ -10,6 +10,8 @@ import UIKit
 @MainActor
 final class JournalEntriesDataSource: NSObject {
 
+    var didTapEdit: ((JournalEntry) -> Void)?
+
     private var tableView: UITableView?
     private var entries = [JournalEntry]()
     private var isUserScrolling = false
@@ -51,7 +53,7 @@ extension JournalEntriesDataSource: UITableViewDataSource {
         cell.backgroundColor = .clear
         cell.delegate = self
         cell.render(title: entry.title)
-        cell.render(text: entry.text)
+        cell.render(text: entry.body)
         return cell
     }
 }
@@ -83,14 +85,14 @@ extension JournalEntriesDataSource: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard let cell = tableView.cellForRow(at: indexPath) else {
+        guard let cell = tableView.cellForRow(at: indexPath), let entry = entries[safe: indexPath.row] else {
             return nil
         }
 
-        let editAction = UIContextualAction(style: .normal, title: nil, handler: { _, _, completion in
-            print("Edit")
+        let editAction = UIContextualAction(style: .normal, title: nil) { [unowned self] _, _, completion in
+            didTapEdit?(entry)
             completion(true)
-        })
+        }
         editAction.backgroundColor = .white.withAlphaComponent(.zero)
         editAction.image = UIImage(systemName: "pencil.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 40))?
             .withTintColor(.systemIndigo, renderingMode: .alwaysOriginal)
@@ -109,9 +111,12 @@ extension JournalEntriesDataSource: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        UIContextMenuConfiguration(identifier: indexPath as NSCopying, actionProvider: {_ in
+        guard let entry = entries[safe: indexPath.row] else {
+            return nil
+        }
+        return UIContextMenuConfiguration(identifier: indexPath as NSCopying, actionProvider: {_ in
             UIMenu(children: [
-                UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { _ in print("Edit") },
+                UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [unowned self] _ in didTapEdit?(entry) },
                 UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { _ in print("Bookmark") },
                 UIMenu(options: .displayInline, children: [
                     UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in print("Delete") }

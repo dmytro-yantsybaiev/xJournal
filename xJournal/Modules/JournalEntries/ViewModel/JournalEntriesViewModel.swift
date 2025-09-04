@@ -16,6 +16,7 @@ final class JournalEntriesViewModel: ViewModel {
         let viewDidLoadPublisher: AnyPublisher<Void, Never>
         let didTapSearchButtonPublisher: AnyPublisher<Void, Never>
         let didTapMenuButtonPublisher: AnyPublisher<Void, Never>
+        let didTapEditEntryPublisher: AnyPublisher<JournalEntry, Never>
         let didTapAddEndtryButtonPublisher: AnyPublisher<Void, Never>
         let didBookmarkEntryPublisher: AnyPublisher<(UITableView, JournalEntry, IndexPath), Never>
     }
@@ -25,7 +26,7 @@ final class JournalEntriesViewModel: ViewModel {
     }
 
     weak var coordinator: (
-        Router.CreateJournalEntryRoute
+        Router.JournalEntryEditorRoute
     )?
 
     private var container: ModelContainer?
@@ -37,7 +38,7 @@ final class JournalEntriesViewModel: ViewModel {
         container = try? ModelContainer(for: JournalEntry.self)
     }
 
-    func transform(_ input: Input) -> Output {
+    func bind(_ input: Input) -> Output {
         input
             .viewDidLoadPublisher
             .sink { [unowned self] _ in
@@ -60,10 +61,16 @@ final class JournalEntriesViewModel: ViewModel {
             .store(in: &cancellables)
 
         input
+            .didTapEditEntryPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] journalEntry in showJournalEntryEditor(journalEntry) }
+            .store(in: &cancellables)
+
+        input
             .didTapAddEndtryButtonPublisher
-            .subscribe(on: DispatchQueue.main)
+            .receive(on: DispatchQueue.main)
             .sink { [unowned self] _ in
-                showCreateJournalEntry()
+                showJournalEntryEditor()
             }
             .store(in: &cancellables)
 
@@ -81,9 +88,15 @@ private extension JournalEntriesViewModel {
         journalEntriesPassthroughSubject.send(journalEntries)
     }
 
-    private func showCreateJournalEntry() {
-        coordinator?.showCreateJournalEntry { [unowned container] newEntry in
-            container?.mainContext.insert(newEntry)
+    private func showJournalEntryEditor(_ journalEntry: JournalEntry? = nil) {
+        coordinator?.showJournalEntryEditor(journalEntry: journalEntry) { [unowned self] newEntry in
+            if let newEntry {
+                container?.mainContext.insert(newEntry)
+            }
+            if let journalEntry, newEntry == nil {
+                container?.mainContext.delete(journalEntry)
+            }
+            loadJournalEntries()
         }
     }
 }

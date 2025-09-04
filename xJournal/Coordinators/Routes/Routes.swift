@@ -7,7 +7,7 @@
 
 extension Router {
 
-    protocol CreateJournalEntryRoute: Route {
-        func showCreateJournalEntry(completion: @escaping (JournalEntry) -> Void)
+    protocol JournalEntryEditorRoute: Route {
+        func showJournalEntryEditor(journalEntry: JournalEntry?, completion: @escaping (JournalEntry?) -> Void)
     }
 }

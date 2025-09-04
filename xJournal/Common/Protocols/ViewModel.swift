@@ -11,5 +11,5 @@ protocol ViewModel: AnyObject {
     associatedtype Input
     associatedtype Output
 
-    func transform(_ input: Input) -> Output
+    func bind(_ input: Input) -> Output
 }

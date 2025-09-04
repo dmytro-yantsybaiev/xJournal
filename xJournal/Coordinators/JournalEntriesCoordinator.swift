@@ -19,12 +19,14 @@ final class JournalEntriesCoordinator: BaseCoordinator, Router.StartFlowRoute {
     }
 }
 
-extension JournalEntriesCoordinator: Router.CreateJournalEntryRoute {
+extension JournalEntriesCoordinator: Router.JournalEntryEditorRoute {
 
-    func showCreateJournalEntry(completion: @escaping (JournalEntry) -> Void) {
-        let viewModel = CreateJournalEntryViewModel()
-        let viewController = CreateJournalEntryViewController.storyboard
+    func showJournalEntryEditor(journalEntry: JournalEntry?, completion: @escaping (JournalEntry?) -> Void) {
+        let viewModel = JournalEntryEditorViewModel(journalEntry: journalEntry, completion: completion)
+        let viewController = JournalEntryEditorViewController.storyboard
+        let navigationController = UINavigationController(rootViewController: viewController)
+        viewModel.coordinator = self
         viewController.viewModel = viewModel
-        present(viewController, animated: true)
+        present(navigationController, animated: true)
     }
 }

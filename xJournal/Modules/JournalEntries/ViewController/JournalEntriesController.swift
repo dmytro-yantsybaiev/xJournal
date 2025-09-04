@@ -12,16 +12,17 @@ protocol JournalEntriesControllerDelegate: AnyObject {
 
     func didTapSearchButton()
     func didTapMenuButton()
+    func didTapEdit(_ journalEntry: JournalEntry)
     func didTapAddEntry()
 }
 
 @MainActor
 final class JournalEntriesController: NSObject {
-    
+
+    @IBOutlet private(set) weak var dataSource: JournalEntriesDataSource!
     @IBOutlet private(set) weak var tableView: UITableView!
     @IBOutlet private(set) weak var addEntryButton: UIButton!
     @IBOutlet private(set) weak var footerView: UIVisualEffectView!
-    @IBOutlet private(set) weak var dataSource: JournalEntriesDataSource!
 
     private(set) lazy var navigationBarTitleLabel: UILabel = {
         let label = UILabel()
@@ -53,13 +54,21 @@ final class JournalEntriesController: NSObject {
     weak var delegate: JournalEntriesControllerDelegate?
 
     func configure() {
+        configureDataSource()
         configureAddEntryButton()
         configureFooterView()
-        configureDataSource()
     }
 }
 
 private extension JournalEntriesController {
+
+    func configureDataSource() {
+        dataSource.configure(tableView, footerHeight: footerView.bounds.height)
+
+        dataSource.didTapEdit = { [unowned self] journalEntry in
+            delegate?.didTapEdit(journalEntry)
+        }
+    }
 
     func configureAddEntryButton() {
         let imageConfiguration = UIImage.SymbolConfiguration(pointSize: 25)
@@ -84,9 +93,5 @@ private extension JournalEntriesController {
         gradientLayer.locations = [0.0, 1.0]
         footerView.layer.mask = gradientLayer
         footerView.isUserInteractionEnabled = false
-    }
-
-    func configureDataSource() {
-        dataSource.configure(tableView, footerHeight: footerView.bounds.height)
     }
 }
