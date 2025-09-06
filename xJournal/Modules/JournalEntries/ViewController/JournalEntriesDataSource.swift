@@ -12,9 +12,8 @@ final class JournalEntriesDataSource: NSObject {
 
     var didTapEdit: ((JournalEntry) -> Void)?
 
-    private var tableView: UITableView?
+    private var tableView: UITableView!
     private var entries = [JournalEntry]()
-    private var isUserScrolling = false
 
     func configure(_ tableView: UITableView, footerHeight: CGFloat) {
         self.tableView = tableView
@@ -28,9 +27,28 @@ final class JournalEntriesDataSource: NSObject {
         tableView.sectionFooterHeight = .leastNonzeroMagnitude
     }
 
-    func render(entries: [JournalEntry]) {
+    func render(_ entries: [JournalEntry]) {
         self.entries = entries
-        tableView?.reloadData()
+        tableView.reloadData()
+    }
+
+    func insert(_ entry: JournalEntry) {
+        if let index = entries.firstIndex(of: entry) {
+            entries.remove(at: index)
+            entries.insert(entry, at: index)
+            tableView.reloadData()
+            return
+        }
+        entries.insert(entry, at: .zero)
+        tableView.reloadData()
+    }
+
+    func delete(_ entry: JournalEntry) {
+        guard let index = entries.firstIndex(of: entry) else {
+            return
+        }
+        entries.remove(at: index)
+        tableView.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
     }
 }
 
@@ -98,10 +116,10 @@ extension JournalEntriesDataSource: UITableViewDelegate {
             .withTintColor(.systemIndigo, renderingMode: .alwaysOriginal)
             .withBaselineOffset(fromBottom: centerOffset(of: cell, in: tableView)?.dy ?? .zero)
 
-        let deleteAction = UIContextualAction(style: .destructive, title: nil, handler: { _, _, completion in
-            print("Delete")
+        let deleteAction = UIContextualAction(style: .destructive, title: nil) { [unowned self] _, _, completion in
+            delete(entry)
             completion(true)
-        })
+        }
         deleteAction.backgroundColor = .white.withAlphaComponent(.zero)
         deleteAction.image = UIImage(systemName: "trash.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 40))?
             .withTintColor(.red, renderingMode: .alwaysOriginal)
@@ -114,15 +132,14 @@ extension JournalEntriesDataSource: UITableViewDelegate {
         guard let entry = entries[safe: indexPath.row] else {
             return nil
         }
-        return UIContextMenuConfiguration(identifier: indexPath as NSCopying, actionProvider: {_ in
-            UIMenu(children: [
-                UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [unowned self] _ in didTapEdit?(entry) },
-                UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { _ in print("Bookmark") },
-                UIMenu(options: .displayInline, children: [
-                    UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in print("Delete") }
-                ])
-            ])
-        })
+
+        let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [unowned self] _ in didTapEdit?(entry) }
+        let bookmarkAction = UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { _ in print("Bookmark") }
+        let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { [unowned self] _ in delete(entry) }
+        let deleteMenu = UIMenu(options: .displayInline, children: [deleteAction])
+        let contextMenu = UIMenu(children: [editAction, bookmarkAction, deleteMenu])
+
+        return UIContextMenuConfiguration(identifier: indexPath as NSCopying, actionProvider: { _ in contextMenu })
     }
 
     func tableView(_ tableView: UITableView, previewForHighlightingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
@@ -130,7 +147,7 @@ extension JournalEntriesDataSource: UITableViewDelegate {
               let cell = tableView.cellForRow(at: indexPath) as? JournalEntryCell else {
             return nil
         }
-        return preview(for: cell)
+        return UITargetedPreview(view: cell.contentStackView)
     }
 
     func tableView(_ tableView: UITableView, previewForDismissingContextMenuWithConfiguration configuration: UIContextMenuConfiguration) -> UITargetedPreview? {
@@ -138,57 +155,8 @@ extension JournalEntriesDataSource: UITableViewDelegate {
               let cell = tableView.cellForRow(at: indexPath) as? JournalEntryCell else {
             return nil
         }
-        return preview(for: cell)
+        return UITargetedPreview(view: cell.contentStackView)
     }
-}
-
-extension JournalEntriesDataSource {
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard !isUserScrolling else {
-            return
-        }
-        // reach top
-//        if scrollView.contentOffset.y <= .zero {
-//            let indexPath = IndexPath(row: 0, section: 0)
-//            categoriesCollectionView?.selectItem(at: indexPath, animated: false, scrollPosition: .left)
-//        }
-//        let tolerance: CGFloat = 50
-//
-//        if scrollView.contentOffset.y > .zero, scrollView.contentOffset.y < 100 {
-//            if abs(scrollView.contentOffset.y - 0) < tolerance {
-//                scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: 100), animated: true)
-//            } else if abs(scrollView.contentOffset.y - 100) < tolerance {
-//                scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: 0), animated: true)
-//            }
-//
-//        }
-
-        print("sss")
-    }
-
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        isUserScrolling = true
-    }
-
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if !decelerate {
-            isUserScrolling = false
-//            UIView.animate(withDuration: 0.2) {
-//                scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: 100), animated: false)
-//            }
-
-        }
-    }
-
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        isUserScrolling = false
-//        UIView.animate(withDuration: 0.2) {
-//            scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: 100), animated: false)
-//        }
-
-    }
-
 }
 
 extension JournalEntriesDataSource: JournalEntryCellDelegate {
@@ -202,11 +170,13 @@ extension JournalEntriesDataSource: JournalEntryCellDelegate {
 
         UIView.animate(withDuration: 0.3) { [unowned self] in
             if !isTopPointVisibleInWindow(for: cell) {
-                tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                let rect = tableView.rectForRow(at: indexPath)
+                tableView.setContentOffset(CGPoint(x: 0, y: rect.minY), animated: false)
             }
             tableView.performBatchUpdates {
                 if !isTopPointVisibleInWindow(for: cell) {
-                    tableView.scrollToRow(at: indexPath, at: .top, animated: false)
+                    let rect = tableView.rectForRow(at: indexPath)
+                    tableView.setContentOffset(CGPoint(x: 0, y: rect.minY), animated: false)
                 }
                 cell.toggleExpandedState()
                 cell.hideTextChevronImage()
@@ -233,23 +203,6 @@ private extension JournalEntriesDataSource {
         let visibleCenter = CGPoint(x: intersection.midX, y: intersection.midY)
 
         return CGVector(dx: visibleCenter.x - cellCenter.x, dy: visibleCenter.y - cellCenter.y + 15)
-    }
-
-    func preview(for cell: JournalEntryCell) -> UITargetedPreview? {
-        guard let snapshot = cell.contentStackView.snapshotView(afterScreenUpdates: false) else {
-            return nil
-        }
-
-        let parameters = UIPreviewParameters()
-        parameters.visiblePath = UIBezierPath(roundedRect: cell.contentStackView.bounds, cornerRadius: cell.contentStackView.layer.cornerRadius)
-        parameters.backgroundColor = .clear
-
-        let previewTarget = UIPreviewTarget(
-            container: cell.contentStackView,
-            center: CGPoint(x: cell.contentStackView.bounds.midX, y: cell.contentStackView.bounds.midY)
-        )
-
-        return UITargetedPreview(view: snapshot, parameters: parameters, target: previewTarget)
     }
 
     func isTopPointVisibleInWindow(for cell: UITableViewCell) -> Bool {

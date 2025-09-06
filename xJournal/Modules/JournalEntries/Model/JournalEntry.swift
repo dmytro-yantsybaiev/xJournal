@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class JournalEntry {
+final class JournalEntry: MenuIdentifiable {
 
     @Attribute(.unique) private(set) var id = UUID().uuidString
 

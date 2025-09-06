@@ -16,13 +16,15 @@ final class JournalEntriesViewModel: ViewModel {
         let viewDidLoadPublisher: AnyPublisher<Void, Never>
         let didTapSearchButtonPublisher: AnyPublisher<Void, Never>
         let didTapMenuButtonPublisher: AnyPublisher<Void, Never>
+        let didTapBookmarkEntryPublisher: AnyPublisher<(UITableView, JournalEntry, IndexPath), Never>
         let didTapEditEntryPublisher: AnyPublisher<JournalEntry, Never>
         let didTapAddEndtryButtonPublisher: AnyPublisher<Void, Never>
-        let didBookmarkEntryPublisher: AnyPublisher<(UITableView, JournalEntry, IndexPath), Never>
     }
 
     struct Output {
-        let journalEntriesPublisher: AnyPublisher<[JournalEntry], Never>
+        let renderEntriesPublisher: AnyPublisher<[JournalEntry], Never>
+        let insertEntryPublisher: AnyPublisher<JournalEntry, Never>
+        let deleteEntryPublisher: AnyPublisher<JournalEntry, Never>
     }
 
     weak var coordinator: (
@@ -31,7 +33,9 @@ final class JournalEntriesViewModel: ViewModel {
 
     private var container: ModelContainer?
 
-    private let journalEntriesPassthroughSubject = PassthroughSubject<[JournalEntry], Never>()
+    private let renderEntriesPassthroughSubject = PassthroughSubject<[JournalEntry], Never>()
+    private let insertEntryPassthroughSubject = PassthroughSubject<JournalEntry, Never>()
+    private let deleteEntryPassthroughSubject = PassthroughSubject<JournalEntry, Never>()
     private var cancellables = Set<AnyCancellable>()
 
     init() {
@@ -75,7 +79,9 @@ final class JournalEntriesViewModel: ViewModel {
             .store(in: &cancellables)
 
         return Output(
-            journalEntriesPublisher: journalEntriesPassthroughSubject.eraseToAnyPublisher()
+            renderEntriesPublisher: renderEntriesPassthroughSubject.eraseToAnyPublisher(),
+            insertEntryPublisher: insertEntryPassthroughSubject.eraseToAnyPublisher(),
+            deleteEntryPublisher: deleteEntryPassthroughSubject.eraseToAnyPublisher(),
         )
     }
 }
@@ -85,18 +91,21 @@ private extension JournalEntriesViewModel {
     func loadJournalEntries() {
         let descriptor = FetchDescriptor<JournalEntry>()
         let journalEntries = (try? container?.mainContext.fetch(descriptor)) ?? []
-        journalEntriesPassthroughSubject.send(journalEntries)
+        renderEntriesPassthroughSubject.send(journalEntries)
     }
 
     private func showJournalEntryEditor(_ journalEntry: JournalEntry? = nil) {
         coordinator?.showJournalEntryEditor(journalEntry: journalEntry) { [unowned self] newEntry in
             if let newEntry {
                 container?.mainContext.insert(newEntry)
+                try? container?.mainContext.save()
+                insertEntryPassthroughSubject.send(newEntry)
             }
             if let journalEntry, newEntry == nil {
                 container?.mainContext.delete(journalEntry)
+                try? container?.mainContext.save()
+                deleteEntryPassthroughSubject.send(journalEntry)
             }
-            loadJournalEntries()
         }
     }
 }

@@ -16,9 +16,9 @@ final class JournalEntriesViewController: BaseViewController {
 
     private let didTapSearchButtonPassthroughSubject = PassthroughSubject<Void, Never>()
     private let didTapMenuButtonPassthroughSubject = PassthroughSubject<Void, Never>()
+    private let didTapBookmarkEntryPassthroughSubject = PassthroughSubject<(UITableView, JournalEntry, IndexPath), Never>()
     private let didTapEditEntryPassthroughSubject = PassthroughSubject<JournalEntry, Never>()
     private let didTapAddEndtryButtonPassthroughSubject = PassthroughSubject<Void, Never>()
-    private let didBookmarkEntryPassthroughSubject = PassthroughSubject<(UITableView, JournalEntry, IndexPath), Never>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,17 +44,33 @@ final class JournalEntriesViewController: BaseViewController {
             viewDidLoadPublisher: viewDidLoadPassthroughSubject.eraseToAnyPublisher(),
             didTapSearchButtonPublisher: didTapSearchButtonPassthroughSubject.eraseToAnyPublisher(),
             didTapMenuButtonPublisher: didTapMenuButtonPassthroughSubject.eraseToAnyPublisher(),
+            didTapBookmarkEntryPublisher: didTapBookmarkEntryPassthroughSubject.eraseToAnyPublisher(),
             didTapEditEntryPublisher: didTapEditEntryPassthroughSubject.eraseToAnyPublisher(),
             didTapAddEndtryButtonPublisher: didTapAddEndtryButtonPassthroughSubject.eraseToAnyPublisher(),
-            didBookmarkEntryPublisher: didBookmarkEntryPassthroughSubject.eraseToAnyPublisher(),
         )
         let output = viewModel.bind(input)
 
         output
-            .journalEntriesPublisher
+            .renderEntriesPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [unowned self] journalEntries in
-                controller.dataSource.render(entries: journalEntries)
+            .sink { [unowned self] entries in
+                controller.dataSource.render(entries)
+            }
+            .store(in: &cancellables)
+
+        output
+            .insertEntryPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] entry in
+                controller.dataSource.insert(entry)
+            }
+            .store(in: &cancellables)
+
+        output
+            .deleteEntryPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] entry in
+                controller.dataSource.delete(entry)
             }
             .store(in: &cancellables)
     }

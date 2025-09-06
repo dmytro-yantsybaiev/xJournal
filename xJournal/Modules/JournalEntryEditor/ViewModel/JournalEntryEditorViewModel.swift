@@ -131,11 +131,13 @@ private extension JournalEntryEditorViewModel {
         journalEntry.update(body: entryText[.body])
 
         if !journalEntry.title.orEmpty.isEmpty, !journalEntry.isTitleHidden {
-            coordinator?.dismiss(animated: true) { [unowned self] in completion(journalEntry) }
+            completion(journalEntry)
+            coordinator?.dismiss(animated: true)
         }
 
         if !journalEntry.body.orEmpty.isEmpty {
-            coordinator?.dismiss(animated: true) { [unowned self] in completion(journalEntry) }
+            completion(journalEntry)
+            coordinator?.dismiss(animated: true)
         }
 
         coordinator?.dismiss(animated: true)
