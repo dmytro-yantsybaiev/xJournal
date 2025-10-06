@@ -15,7 +15,7 @@ final class JournalEntryEditorDataSource: NSObject {
         case text
     }
 
-    enum Entry: Hashable {
+    enum Item: Hashable {
 
         case title
         case body
@@ -63,13 +63,24 @@ final class JournalEntryEditorDataSource: NSObject {
         }
     }
 
-    var textForEntry: ((Entry) -> String?)?
-    var textDidChangeForEntry: ((Entry, String) -> Void)?
+    var textForItem: ((Item) -> String?)?
+    var textDidChangeForItem: ((Item, String) -> Void)?
 
     private var collectionView: UICollectionView!
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Entry>!
-    private var snapshot: NSDiffableDataSourceSnapshot<Section, Entry>!
-    private var entryTextView = [Entry: UITextView]()
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Item>!
+    private var snapshot: NSDiffableDataSourceSnapshot<Section, Item>!
+    private var itemTextView = [Item: UITextView]()
+
+    override init() {
+        super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
 
     func configure(_ collectionView: UICollectionView) {
         self.collectionView = collectionView
@@ -78,9 +89,9 @@ final class JournalEntryEditorDataSource: NSObject {
         configuration.backgroundColor = .clear
         configuration.separatorConfiguration.bottomSeparatorInsets = .zero
 
-        snapshot = NSDiffableDataSourceSnapshot<Section, Entry>()
+        snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
 
-        dataSource = UICollectionViewDiffableDataSource<Section, Entry>(collectionView: collectionView) { [unowned self] collectionView, indexPath, entry in
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { [unowned self] collectionView, indexPath, item in
             let section = dataSource.sectionIdentifier(for: indexPath.section)!
             let cell: JournalEntryTextCell = collectionView.dequeueReusableCell(at: indexPath)!
 
@@ -90,16 +101,16 @@ final class JournalEntryEditorDataSource: NSObject {
             case .text:
                 var configuration = JournalEntryTextCell.Configuration()
                 configuration.backgroundColor = .clear
-                configuration.text = textForEntry?(entry)
-                configuration.font = entry.font
-                configuration.textColor = entry.textColor
-                configuration.placeholderText = entry.placeholderText
-                configuration.placeholderFont = entry.placeholderFont
-                configuration.placeholderTextColor = entry.placeholderTextColor
+                configuration.text = textForItem?(item)
+                configuration.font = item.font
+                configuration.textColor = item.textColor
+                configuration.placeholderText = item.placeholderText
+                configuration.placeholderFont = item.placeholderFont
+                configuration.placeholderTextColor = item.placeholderTextColor
                 cell.delegate = self
-                cell.itemIdentifierType = entry
+                cell.itemIdentifierType = item
                 cell.apply(configuration)
-                entryTextView[entry] = cell.textView
+                itemTextView[item] = cell.textView
             }
 
             return cell
@@ -113,29 +124,34 @@ final class JournalEntryEditorDataSource: NSObject {
         collectionView.contentInset = UIEdgeInsets(top: -20, left: 0, bottom: 0, right: 0)
     }
 
-    func append(_ entries: [Entry], section: Section) {
+    func append(_ items: [Item], section: Section) {
         snapshot.appendSections([section])
-        snapshot.appendItems(entries, toSection: section)
+        snapshot.appendItems(items, toSection: section)
         dataSource.apply(snapshot)
     }
 
-    func insert(_ entry: Entry, before beforeEntry: Entry) {
-        snapshot.insertItems([entry], beforeItem: beforeEntry)
+    func insert(_ item: Item, before beforeItem: Item) {
+        snapshot.insertItems([item], beforeItem: beforeItem)
         dataSource.apply(snapshot)
     }
 
-    func delete(_ entry: Entry) {
-        snapshot.deleteItems([entry])
+    func delete(_ item: Item) {
+        snapshot.deleteItems([item])
         dataSource.apply(snapshot)
+    }
+
+    func becomeFirstResponder(for item: Item) {
+        DispatchQueue.main.async { [unowned self] in
+            itemTextView[item]?.becomeFirstResponder()
+        }
     }
 }
 
 extension JournalEntryEditorDataSource: JournalEntryTextCellDelegate {
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String, itemIdentifierType: (any Hashable & Sendable)?) -> Bool {
-        guard let entry = snapshot.itemIdentifiers(inSection: .text).first(where: { $0.hashValue == itemIdentifierType?.hashValue }),
-              let bodyTextView = entryTextView[.body],
-              entry == .title else {
+        guard let item = snapshot.itemIdentifiers(inSection: .text).first(where: { $0.hashValue == itemIdentifierType?.hashValue }),
+              item == .title else {
             return true
         }
 
@@ -143,18 +159,35 @@ extension JournalEntryEditorDataSource: JournalEntryTextCellDelegate {
             return true
         }
 
-        bodyTextView.becomeFirstResponder()
+        itemTextView[.body]?.becomeFirstResponder()
         return false
     }
 
     func textViewDidChange(_ textView: UITextView, itemIdentifierType: (any Hashable & Sendable)?) {
         UIView.setAnimationsEnabled(false)
         collectionView.performBatchUpdates(nil) { [unowned self] _ in
-            guard let entry = snapshot.itemIdentifiers(inSection: .text).first(where: { $0.hashValue == itemIdentifierType?.hashValue }) else {
+            guard let item = snapshot.itemIdentifiers(inSection: .text).first(where: { $0.hashValue == itemIdentifierType?.hashValue }) else {
                 return
             }
-            textDidChangeForEntry?(entry, textView.text)
+            textDidChangeForItem?(item, textView.text)
         }
         UIView.setAnimationsEnabled(true)
+    }
+}
+
+private extension JournalEntryEditorDataSource {
+
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let frame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
+        }
+        collectionView.contentInset.bottom = frame.height
+        collectionView.verticalScrollIndicatorInsets.bottom = frame.height
+    }
+
+    @objc func keyboardWillHide(_ notification: Notification) {
+        collectionView.contentInset.bottom = 0
+        collectionView.verticalScrollIndicatorInsets.bottom = 0
     }
 }

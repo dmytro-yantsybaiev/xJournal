@@ -16,36 +16,38 @@ final class JournalEntryEditorViewModel: ViewModel {
         let didTapHideShowTitlePublisher: AnyPublisher<Void, Never>
         let didTapDeletePublisher: AnyPublisher<Void, Never>
         let didTapDonePublisher: AnyPublisher<Void, Never>
-        let textDidChangePublisher: AnyPublisher<(JournalEntryEditorDataSource.Entry, String), Never>
+        let textDidChangePublisher: AnyPublisher<(JournalEntryEditorDataSource.Item, String), Never>
     }
 
     struct Output {
         let renderBookmarkButtonPublisher: AnyPublisher<Bool, Never>
         let renderHideShowTitleActionPublisher: AnyPublisher<Bool, Never>
-        let appendEntriesPublisher: AnyPublisher<[JournalEntryEditorDataSource.Entry], Never>
-        let insertEntryPublisher: AnyPublisher<(JournalEntryEditorDataSource.Entry, JournalEntryEditorDataSource.Entry), Never>
-        let deleteEntryPublisher: AnyPublisher<JournalEntryEditorDataSource.Entry, Never>
+        let becomeFirstResponderForItemPublisher: AnyPublisher<JournalEntryEditorDataSource.Item, Never>
+        let appendItemsPublisher: AnyPublisher<[JournalEntryEditorDataSource.Item], Never>
+        let insertItemPublisher: AnyPublisher<(JournalEntryEditorDataSource.Item, JournalEntryEditorDataSource.Item), Never>
+        let deleteItemPublisher: AnyPublisher<JournalEntryEditorDataSource.Item, Never>
     }
 
     weak var coordinator: Router.DismissRoute?
 
     let journalEntry: JournalEntry
 
-    private(set) var entryText = [JournalEntryEditorDataSource.Entry: String]()
+    private(set) var itemText = [JournalEntryEditorDataSource.Item: String]()
 
     private let renderBookmarkButtonPassthroughSubject = PassthroughSubject<Bool, Never>()
     private let renderHideShowTitleActionPassthroughSubject = PassthroughSubject<Bool, Never>()
-    private let appendEntriesToTextSectionPassthroughSubject = PassthroughSubject<[JournalEntryEditorDataSource.Entry], Never>()
-    private let insertEntryPassthroughSubject = PassthroughSubject<(JournalEntryEditorDataSource.Entry, JournalEntryEditorDataSource.Entry), Never>()
-    private let deleteEntryPassthroughSubject = PassthroughSubject<JournalEntryEditorDataSource.Entry, Never>()
+    private let becomeFirstResponderForItemPassthroughSubject = PassthroughSubject<JournalEntryEditorDataSource.Item, Never>()
+    private let appendItemsToTextSectionPassthroughSubject = PassthroughSubject<[JournalEntryEditorDataSource.Item], Never>()
+    private let insertItemPassthroughSubject = PassthroughSubject<(JournalEntryEditorDataSource.Item, JournalEntryEditorDataSource.Item), Never>()
+    private let deleteItemPassthroughSubject = PassthroughSubject<JournalEntryEditorDataSource.Item, Never>()
     private let completion: (JournalEntry?) -> Void
     private var cancellables = Set<AnyCancellable>()
 
     init(journalEntry: JournalEntry?, completion: @escaping (JournalEntry?) -> Void) {
         self.journalEntry = journalEntry ?? JournalEntry()
         self.completion = completion
-        entryText[.title] = journalEntry?.title
-        entryText[.body] = journalEntry?.body
+        itemText[.title] = journalEntry?.title
+        itemText[.body] = journalEntry?.body
     }
 
     func bind(_ input: Input) -> Output {
@@ -53,10 +55,10 @@ final class JournalEntryEditorViewModel: ViewModel {
             .viewDidLoadPublisher
             .receive(on: DispatchQueue.main)
             .map { _ in [
-                JournalEntryEditorDataSource.Entry.title,
-                JournalEntryEditorDataSource.Entry.body,
+                JournalEntryEditorDataSource.Item.title,
+                JournalEntryEditorDataSource.Item.body,
             ] }
-            .sink { [unowned self] entris in appendEntriesToTextSectionPassthroughSubject.send(entris) }
+            .sink { [unowned self] items in appendItemsToTextSectionPassthroughSubject.send(items) }
             .store(in: &cancellables)
 
         input
@@ -71,6 +73,18 @@ final class JournalEntryEditorViewModel: ViewModel {
             .receive(on: DispatchQueue.main)
             .map { [unowned self] _ in journalEntry.isTitleHidden }
             .sink { [unowned self] isTitleHidden in renderHideShowTitleActionPassthroughSubject.send(isTitleHidden) }
+            .store(in: &cancellables)
+
+        input
+            .viewDidLoadPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] _ in
+                if journalEntry.title?.isEmpty ?? true, journalEntry.body?.isEmpty ?? true {
+                    becomeFirstResponderForItemPassthroughSubject.send(.title)
+                } else {
+                    becomeFirstResponderForItemPassthroughSubject.send(.body)
+                }
+            }
             .store(in: &cancellables)
 
         input
@@ -89,9 +103,9 @@ final class JournalEntryEditorViewModel: ViewModel {
                 journalEntry.update(isTitleHidden: !journalEntry.isTitleHidden)
                 renderHideShowTitleActionPassthroughSubject.send(journalEntry.isTitleHidden)
                 if journalEntry.isTitleHidden {
-                    deleteEntryPassthroughSubject.send(.title)
+                    deleteItemPassthroughSubject.send(.title)
                 } else {
-                    insertEntryPassthroughSubject.send((.title, .body))
+                    insertItemPassthroughSubject.send((.title, .body))
                 }
             }
             .store(in: &cancellables)
@@ -111,15 +125,16 @@ final class JournalEntryEditorViewModel: ViewModel {
         input
             .textDidChangePublisher
             .receive(on: DispatchQueue.main)
-            .sink { [unowned self] entry, text in entryText[entry] = text }
+            .sink { [unowned self] item, text in itemText[item] = text }
             .store(in: &cancellables)
 
         return Output(
             renderBookmarkButtonPublisher: renderBookmarkButtonPassthroughSubject.eraseToAnyPublisher(),
             renderHideShowTitleActionPublisher: renderHideShowTitleActionPassthroughSubject.eraseToAnyPublisher(),
-            appendEntriesPublisher: appendEntriesToTextSectionPassthroughSubject.eraseToAnyPublisher(),
-            insertEntryPublisher: insertEntryPassthroughSubject.eraseToAnyPublisher(),
-            deleteEntryPublisher: deleteEntryPassthroughSubject.eraseToAnyPublisher(),
+            becomeFirstResponderForItemPublisher: becomeFirstResponderForItemPassthroughSubject.eraseToAnyPublisher(),
+            appendItemsPublisher: appendItemsToTextSectionPassthroughSubject.eraseToAnyPublisher(),
+            insertItemPublisher: insertItemPassthroughSubject.eraseToAnyPublisher(),
+            deleteItemPublisher: deleteItemPassthroughSubject.eraseToAnyPublisher(),
         )
     }
 }
@@ -127,8 +142,8 @@ final class JournalEntryEditorViewModel: ViewModel {
 private extension JournalEntryEditorViewModel {
 
     func saveJournalEntry() {
-        journalEntry.update(title: entryText[.title])
-        journalEntry.update(body: entryText[.body])
+        journalEntry.update(title: itemText[.title])
+        journalEntry.update(body: itemText[.body])
 
         if !journalEntry.title.orEmpty.isEmpty, !journalEntry.isTitleHidden {
             completion(journalEntry)

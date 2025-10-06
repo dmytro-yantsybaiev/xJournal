@@ -28,7 +28,8 @@ final class JournalEntriesViewModel: ViewModel {
     }
 
     weak var coordinator: (
-        Router.JournalEntryEditorRoute
+        Router.JournalEntryEditorRoute &
+        Router.DismissRoute
     )?
 
     private var container: ModelContainer?
@@ -67,7 +68,9 @@ final class JournalEntriesViewModel: ViewModel {
         input
             .didTapEditEntryPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [unowned self] journalEntry in showJournalEntryEditor(journalEntry) }
+            .sink { [unowned self] journalEntry in
+                showJournalEntryEditor(journalEntry)
+            }
             .store(in: &cancellables)
 
         input
@@ -89,21 +92,26 @@ final class JournalEntriesViewModel: ViewModel {
 private extension JournalEntriesViewModel {
 
     func loadJournalEntries() {
-        let descriptor = FetchDescriptor<JournalEntry>()
+        let descriptor = FetchDescriptor<JournalEntry>(sortBy: [SortDescriptor(\.timestamp, order: .reverse)])
         let journalEntries = (try? container?.mainContext.fetch(descriptor)) ?? []
         renderEntriesPassthroughSubject.send(journalEntries)
     }
 
-    private func showJournalEntryEditor(_ journalEntry: JournalEntry? = nil) {
-        coordinator?.showJournalEntryEditor(journalEntry: journalEntry) { [unowned self] newEntry in
-            if let newEntry {
-                container?.mainContext.insert(newEntry)
+    
+
+    func showJournalEntryEditor(_ journalEntry: JournalEntry? = nil) {
+        coordinator?.showJournalEntryEditor(journalEntry: journalEntry) { [unowned self] newJournalEntry in
+            defer {
                 try? container?.mainContext.save()
-                insertEntryPassthroughSubject.send(newEntry)
             }
-            if let journalEntry, newEntry == nil {
+
+            if let newJournalEntry {
+                container?.mainContext.insert(newJournalEntry)
+                insertEntryPassthroughSubject.send(newJournalEntry)
+            }
+
+            if let journalEntry, newJournalEntry == nil {
                 container?.mainContext.delete(journalEntry)
-                try? container?.mainContext.save()
                 deleteEntryPassthroughSubject.send(journalEntry)
             }
         }

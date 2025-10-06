@@ -18,7 +18,7 @@ final class JournalEntryEditorViewController: BaseViewController {
     private let didTapHideShowTitlePassthroughSubject = PassthroughSubject<Void, Never>()
     private let didTapDeletePassthroughSubject = PassthroughSubject<Void, Never>()
     private let didTapDonePassthroughSubject = PassthroughSubject<Void, Never>()
-    private let textDidChangePassthroughSubject = PassthroughSubject<(JournalEntryEditorDataSource.Entry, String), Never>()
+    private let textDidChangePassthroughSubject = PassthroughSubject<(JournalEntryEditorDataSource.Item, String), Never>()
 
     private lazy var hideShowTitleAction: UIAction = {
         let action = UIAction { [unowned self] _ in didTapHideShowTitlePassthroughSubject.send() }
@@ -69,33 +69,39 @@ final class JournalEntryEditorViewController: BaseViewController {
             .store(in: &cancellables)
 
         output
-            .appendEntriesPublisher
+            .becomeFirstResponderForItemPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [unowned controller] entries in controller?.dataSource.append(entries, section: .text) }
+            .sink { [unowned controller] item in controller?.dataSource.becomeFirstResponder(for: item) }
             .store(in: &cancellables)
 
         output
-            .insertEntryPublisher
+            .appendItemsPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [unowned controller] entry, beforeEntry in controller?.dataSource.insert(entry, before: beforeEntry) }
+            .sink { [unowned controller] items in controller?.dataSource.append(items, section: .text) }
             .store(in: &cancellables)
 
         output
-            .deleteEntryPublisher
+            .insertItemPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [unowned controller] entry in controller?.dataSource.delete(entry) }
+            .sink { [unowned controller] item, beforeEntry in controller?.dataSource.insert(item, before: beforeEntry) }
+            .store(in: &cancellables)
+
+        output
+            .deleteItemPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned controller] item in controller?.dataSource.delete(item) }
             .store(in: &cancellables)
     }
 }
 
 extension JournalEntryEditorViewController: JournalEntryEditorControllerDelegate {
 
-    func text(for entry: JournalEntryEditorDataSource.Entry) -> String? {
-        viewModel.entryText[entry]
+    func text(for item: JournalEntryEditorDataSource.Item) -> String? {
+        viewModel.itemText[item]
     }
     
-    func textDidChange(for entry: JournalEntryEditorDataSource.Entry, text: String) {
-        textDidChangePassthroughSubject.send((entry, text))
+    func textDidChange(for item: JournalEntryEditorDataSource.Item, text: String) {
+        textDidChangePassthroughSubject.send((item, text))
     }
 }
 

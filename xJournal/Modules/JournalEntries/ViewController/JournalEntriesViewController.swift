@@ -25,11 +25,6 @@ final class JournalEntriesViewController: BaseViewController {
         sendViewDidLoad()
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        controller.footerView.layer.mask?.frame = controller.footerView.bounds
-    }
-
     override func configure() {
         super.configure()
         controller.configure()
@@ -101,8 +96,7 @@ private extension JournalEntriesViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: controller.navigationBarTitleLabel)
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(customView: controller.menuButton),
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(systemItem: .flexibleSpace),
+            .fixedSpace(15),
             UIBarButtonItem(customView: controller.searchButton),
         ]
     }

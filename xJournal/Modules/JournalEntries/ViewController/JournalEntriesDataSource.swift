@@ -90,10 +90,10 @@ extension JournalEntriesDataSource: UITableViewDelegate {
             return nil
         }
 
-        let bookmarkAction = UIContextualAction(style: .normal, title: nil, handler: { _, _, completion in
+        let bookmarkAction = UIContextualAction(style: .normal, title: nil) { _, view, completion in
             print("Bookmark")
             completion(true)
-        })
+        }
         bookmarkAction.backgroundColor = .white.withAlphaComponent(0)
         bookmarkAction.image = UIImage(systemName: "bookmark.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 40))?
             .withTintColor(.systemPink, renderingMode: .alwaysOriginal)
@@ -174,10 +174,6 @@ extension JournalEntriesDataSource: JournalEntryCellDelegate {
                 tableView.setContentOffset(CGPoint(x: 0, y: rect.minY), animated: false)
             }
             tableView.performBatchUpdates {
-                if !isTopPointVisibleInWindow(for: cell) {
-                    let rect = tableView.rectForRow(at: indexPath)
-                    tableView.setContentOffset(CGPoint(x: 0, y: rect.minY), animated: false)
-                }
                 cell.toggleExpandedState()
                 cell.hideTextChevronImage()
                 cell.layoutIfNeeded()
@@ -202,7 +198,7 @@ private extension JournalEntriesDataSource {
 
         let visibleCenter = CGPoint(x: intersection.midX, y: intersection.midY)
 
-        return CGVector(dx: visibleCenter.x - cellCenter.x, dy: visibleCenter.y - cellCenter.y + 15)
+        return CGVector(dx: visibleCenter.x - cellCenter.x, dy: visibleCenter.y - cellCenter.y)
     }
 
     func isTopPointVisibleInWindow(for cell: UITableViewCell) -> Bool {

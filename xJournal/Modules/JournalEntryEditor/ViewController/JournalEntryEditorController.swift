@@ -9,8 +9,8 @@ import UIKit
 
 @MainActor
 protocol JournalEntryEditorControllerDelegate: AnyObject {
-    func text(for entry: JournalEntryEditorDataSource.Entry) -> String?
-    func textDidChange(for entry: JournalEntryEditorDataSource.Entry, text: String)
+    func text(for item: JournalEntryEditorDataSource.Item) -> String?
+    func textDidChange(for item: JournalEntryEditorDataSource.Item, text: String)
 }
 
 @MainActor
@@ -36,13 +36,6 @@ final class JournalEntryEditorController: NSObject {
         button.tintColor = .systemIndigo
         return button
     }()
-//    private(set) lazy var doneButton: UIButton = {
-//        let button = UIButton()
-//        button.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
-//        button.tintColor = .systemIndigo
-//        button.addAction(UIAction { [unowned self] _ in delegate?.didTapMenuButton() }, for: .touchUpInside)
-//        return button
-//    }()
 
     weak var delegate: JournalEntryEditorControllerDelegate?
 
@@ -56,12 +49,12 @@ private extension JournalEntryEditorController {
     func configureDataSource() {
         dataSource.configure(collectionView)
 
-        dataSource.textForEntry = { [unowned self] entry in
-            delegate?.text(for: entry)
+        dataSource.textForItem = { [unowned self] item in
+            delegate?.text(for: item)
         }
 
-        dataSource.textDidChangeForEntry = { [unowned self] entry, text in
-            delegate?.textDidChange(for: entry, text: text)
+        dataSource.textDidChangeForItem = { [unowned self] item, text in
+            delegate?.textDidChange(for: item, text: text)
         }
     }
 }
